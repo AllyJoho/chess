@@ -8,9 +8,19 @@ package chess;
  */
 public class ChessBoard {
 
-    ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares;
     public ChessBoard() {
-        
+        resetBoard();
+    }
+
+    /**
+     * Removes a chess piece from the chessboard. I manually added this because idk what else to do.
+     *
+     * @param position where to add the piece to
+     * @param piece    the piece to add
+     */
+    public void removePiece(ChessPosition position, ChessPiece piece) {
+        squares[position.getRow()-1][position.getColumn()-1] = null;
     }
 
     /**

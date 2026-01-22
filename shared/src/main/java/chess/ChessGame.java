@@ -11,8 +11,11 @@ import java.util.Collection;
 public class ChessGame {
 
     private TeamColor teamTurn;
+    private ChessBoard board;
+
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
+        this.board = new ChessBoard();
     }
 
     /**
@@ -47,7 +50,11 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece startPiece = this.board.getPiece(startPosition);
+        if (startPiece == null) {
+            return null;
+        }
+        return startPiece.pieceMoves(this.board, startPosition);
     }
 
     /**
@@ -57,7 +64,17 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece piece = this.board.getPiece(startPosition);
+        if (piece == null) {
+            throw new InvalidMoveException("No piece");
+        }
+        if (!piece.pieceMoves(this.board, startPosition).contains(move)) {
+            throw new InvalidMoveException("Move not valid");
+        }
+        this.board.addPiece(endPosition, piece);
+        this.board.removePiece(startPosition,piece);
     }
 
     /**
@@ -97,7 +114,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -106,6 +123,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 }
