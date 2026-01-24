@@ -11,8 +11,7 @@ public class KingMovesCalculator extends ChessMovesCalculator {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = getSideways();
-        moves = doNotLandOnTeammate(moves);
+        Collection<ChessMove> moves = getSideways(board, myPosition);
         return moves;
     }
 }

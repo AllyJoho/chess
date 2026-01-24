@@ -36,9 +36,6 @@ public class PawnMovesCalculator extends ChessMovesCalculator {
             System.out.println("DEBUG: Adding forward move for " + pieceColor + " Pawn at [" + col + "," + row1 + "]");
             System.out.println("DEBUG: Target square [" + row1 + "," + row1 + "] contains: allegedly nothing");
             addPromotionMoves(myPosition, front, row1);
-//            if((row == 2 && pieceColor == TeamColor.WHITE) || (row == 7 && pieceColor == TeamColor.BLACK)){
-//                pieceMoves(board, front);
-//            }
         }
         if(col != 1){
             ChessPosition leftDiagonal = new ChessPosition(row1, col-1);
@@ -56,6 +53,13 @@ public class PawnMovesCalculator extends ChessMovesCalculator {
                 System.out.println("DEBUG: Adding right diagonal move for " + pieceColor + " Pawn at [" + col + "," + row + "]");
                 System.out.println("DEBUG: Target square [" + (col+1) + "," + row1 + "] contains: " + rdPiece.toString());
                 addPromotionMoves(myPosition, rightDiagonal, row1);
+            }
+        }
+        if((row == 2 && pieceColor == TeamColor.WHITE) || (row == 7 && pieceColor == TeamColor.BLACK)){
+            row1 = pieceColor == TeamColor.WHITE ? row1+1 : row1-1;
+            ChessPosition doublefront = new ChessPosition(row1, col);
+            if(board.getPiece(doublefront) == null && board.getPiece(front) == null){
+                addPromotionMoves(myPosition, doublefront, row1);
             }
         }
         return moves;

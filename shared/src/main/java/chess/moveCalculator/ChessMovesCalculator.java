@@ -14,19 +14,11 @@ public class ChessMovesCalculator {
         this.type = type;
     }
 
-    public Collection<ChessMove> doNotLandOnTeammate(Collection<ChessMove> moves) {
+    public Collection<ChessMove> getDiagonal(ChessBoard board, ChessPosition myPosition) {
         throw new RuntimeException("Not implemented");
     }
 
-    public Collection<ChessMove> getDiagonal() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    public Collection<ChessMove> getSideways() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    public Collection<ChessMove> getKnightCorners() {
+    public Collection<ChessMove> getSideways(ChessBoard board, ChessPosition myPosition) {
         throw new RuntimeException("Not implemented");
     }
 

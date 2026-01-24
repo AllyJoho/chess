@@ -11,8 +11,6 @@ public class BishopMovesCalculator extends ChessMovesCalculator {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = getDiagonal();
-        moves = doNotLandOnTeammate(moves);
-        return moves;
+        return getDiagonal(board, myPosition);
     }
 }
