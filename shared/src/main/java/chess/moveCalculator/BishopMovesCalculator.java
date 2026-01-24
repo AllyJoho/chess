@@ -5,7 +5,6 @@ import chess.*;
 import java.util.Collection;
 
 public class BishopMovesCalculator extends ChessMovesCalculator {
-
     public BishopMovesCalculator(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         super(pieceColor, type);
     }
