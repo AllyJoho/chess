@@ -1,21 +1,37 @@
 package chess.moveCalculator;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
+import java.util.Collection;
+import java.util.List;
 
 public class ChessMovesCalculator {
     protected final ChessGame.TeamColor pieceColor;
     protected final ChessPiece.PieceType type;
-    protected final ChessBoard board;
-    protected final ChessPosition myPosition;
 
-    public ChessMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.board = board;
-        this.myPosition = myPosition;
+    public ChessMovesCalculator(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+    }
+
+    public Collection<ChessMove> doNotLandOnTeammate(Collection<ChessMove> moves) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public Collection<ChessMove> getDiagonal() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public Collection<ChessMove> getSideways() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public Collection<ChessMove> getKnightCorners() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        return List.of();
     }
 }
 

@@ -4,14 +4,14 @@ import chess.*;
 
 import java.util.Collection;
 
-public class BishopMovesCalculator extends ChessMovesCalculator {
+public class KnightMovesCalculator extends ChessMovesCalculator {
 
-    public BishopMovesCalculator(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public KnightMovesCalculator(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         super(pieceColor, type);
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = getDiagonal();
+        Collection<ChessMove> moves = getSideways();
         moves = doNotLandOnTeammate(moves);
         return moves;
     }

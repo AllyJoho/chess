@@ -1,7 +1,8 @@
 package chess;
+import chess.moveCalculator.*;
+import chess.moveCalculator.ChessMovesCalculator;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,10 +16,19 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private final ChessMovesCalculator movesCalculator;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+        movesCalculator = switch (type) {
+            case KING -> new KingMovesCalculator(pieceColor, type);
+            case QUEEN -> new QueenMoveCalculator(pieceColor, type);
+            case BISHOP -> new BishopMovesCalculator(pieceColor, type);
+            case KNIGHT -> new KnightMovesCalculator(pieceColor, type);
+            case ROOK -> new RookMovesCalculator(pieceColor, type);
+            case PAWN -> new PawnMovesCalculator(pieceColor, type);
+        };
     }
 
     /**
@@ -55,7 +65,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return List.of();
+        return movesCalculator.pieceMoves(board,myPosition);
     }
 
     @Override
@@ -74,9 +84,15 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "ChessPiece{" +
-                "pieceColor=" + pieceColor +
-                ", type=" + type +
-                '}';
+        String letter = switch (type) {
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "P";
+        };
+
+        return pieceColor == ChessGame.TeamColor.WHITE ? letter : letter.toLowerCase();
     }
 }
