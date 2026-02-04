@@ -1,0 +1,52 @@
+package chess.MovesCalculator;
+
+import chess.*;
+import chess.moveCalculator.ChessMovesCalculator;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class CodePawnAgain extends ChessMovesCalculator {
+    Collection<ChessMove> moves;
+    public CodePawnAgain(ChessGame.TeamColor color, ChessPiece.PieceType type){
+        super(color,type);
+    }
+
+    private void addMoves(ChessPosition oldPos, ChessPosition newPos, int row){
+        if(row == 1 || row == 8){
+            moves.add(new ChessMove(oldPos, newPos, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(oldPos, newPos, ChessPiece.PieceType.KNIGHT));
+            moves.add(new ChessMove(oldPos, newPos, ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(oldPos, newPos, ChessPiece.PieceType.ROOK));
+        }else{
+            moves.add(new ChessMove(oldPos, newPos, null));
+        }
+    }
+
+    @Override
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPos) {
+        moves = new ArrayList<>();
+        int row = myPos.getRow();
+        int col = myPos.getColumn();
+        int row1 = pieceColor == ChessGame.TeamColor.WHITE ? row+1:row-1;
+        for (int col1 = col-1; col1 < col+1; col1++) {
+            ChessPosition newPos = new ChessPosition(row1, col1);
+            ChessPiece newPiece = board.getPiece(newPos);
+            if(col == col1){
+                if(newPiece == null){
+                    addMoves(myPos, newPos, row1);
+                    if((row == 2 && pieceColor == ChessGame.TeamColor.WHITE) || (row == 7 && pieceColor == ChessGame.TeamColor.BLACK)){
+                        int row2 = pieceColor == ChessGame.TeamColor.WHITE ? row+2:row-2;
+                        ChessPosition doublePos = new ChessPosition(row2, col);
+                        if(board.getPiece(doublePos) == null){
+                            addMoves(myPos, doublePos, row2);
+                        }
+                    }
+                }
+            } else if (newPiece != null && newPiece.getTeamColor() != pieceColor) {
+                addMoves(myPos, newPos, row1);
+            }
+        }
+        return moves;
+    }
+}

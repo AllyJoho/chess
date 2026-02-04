@@ -27,7 +27,7 @@ public class ChessPiece {
             case BISHOP -> new BishopMovesCalculator(pieceColor, type);
             case KNIGHT -> new KnightMovesCalculator(pieceColor, type);
             case ROOK -> new RookMovesCalculator(pieceColor, type);
-            case PAWN -> new PawnMovesCalculator(pieceColor, type);
+            case PAWN -> new PawnFromMemory(pieceColor, type);
         };
     }
 
