@@ -16,6 +16,7 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
     private final ChessMovesCalculator movesCalculator;
+    // To be accessed for Castling and En Passant. Still figuring out going to prioritize project.
     private boolean moved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {

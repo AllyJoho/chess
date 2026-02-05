@@ -40,7 +40,6 @@ public class PawnMovesCalculator extends ChessMovesCalculator{
                     }
                 }
             } else if (newPiece != null && pieceColor != newPiece.getTeamColor()) {
-
                 addPotentialMoves(myPos, newPos, row1);
             }
         }

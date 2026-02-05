@@ -21,7 +21,7 @@ public class KingMovesCalculator extends ChessMovesCalculator {
         if(!myPiece.getIfMoved()){
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-//            Going to put castling here
+            // Going to put castling here
         }
         return moves;
     }
