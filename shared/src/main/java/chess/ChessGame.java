@@ -74,8 +74,17 @@ public class ChessGame {
         if (!piece.pieceMoves(this.board, startPosition).contains(move)) {
             throw new InvalidMoveException("Move not valid");
         }
+        if(piece.getTeamColor() != getTeamTurn()){
+            throw new InvalidMoveException("Not your turn");
+        }
+        if(move.getPromotionPiece() != null){
+            piece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
+        }
+        piece.recordMoved();
         this.board.addPiece(endPosition, piece);
         this.board.removePiece(startPosition);
+        TeamColor nextColor = getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        setTeamTurn(nextColor);
     }
 
     /**

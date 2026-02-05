@@ -1,7 +1,8 @@
-package chess.moveCalculator;
+package chess.move;
 
 import chess.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class KnightMovesCalculator extends ChessMovesCalculator {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new java.util.ArrayList<>(List.of());
+        Collection<ChessMove> moves = new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         int row1;

@@ -1,9 +1,8 @@
-package chess.moveCalculator;
+package chess.move;
 
 import chess.*;
 
 import java.util.Collection;
-import java.util.List;
 
 public class RookMovesCalculator extends ChessMovesCalculator {
     public RookMovesCalculator(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {

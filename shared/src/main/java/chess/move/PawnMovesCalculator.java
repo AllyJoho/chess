@@ -1,14 +1,13 @@
-package chess.moveCalculator;
+package chess.move;
 
 import chess.*;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class PawnFromMemory extends ChessMovesCalculator{
+public class PawnMovesCalculator extends ChessMovesCalculator{
     private Collection<ChessMove> moves;
-    public PawnFromMemory(ChessGame.TeamColor color, ChessPiece.PieceType type){
+    public PawnMovesCalculator(ChessGame.TeamColor color, ChessPiece.PieceType type){
         super(color, type);
     }
     private void addPotentialMoves(ChessPosition oldPos, ChessPosition newPos, int row){
