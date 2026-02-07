@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,11 +53,14 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
         ChessPiece startPiece = this.board.getPiece(startPosition);
-        if (startPiece == null) {
-            return null;
+        for(ChessMove move : startPiece.pieceMoves(this.board, startPosition)){
+            if(!simulateMove(move, teamTurn)){
+                possibleMoves.add(move);
+            }
         }
-        return startPiece.pieceMoves(this.board, startPosition);
+        return possibleMoves;
     }
 
     /**
@@ -68,6 +72,7 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
+        TeamColor nextColor = getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         ChessPiece piece = this.board.getPiece(startPosition);
         if (piece == null) {
             throw new InvalidMoveException("No piece");
@@ -78,13 +83,14 @@ public class ChessGame {
         if(piece.getTeamColor() != getTeamTurn()){
             throw new InvalidMoveException("Not your turn");
         }
+        if (!this.validMoves(startPosition).contains(move)) {
+            throw new InvalidMoveException("Can't move in check");
+        }
         if(move.getPromotionPiece() != null){
             piece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
         }
-
         this.board.addPiece(endPosition, piece);
         this.board.removePiece(startPosition);
-        TeamColor nextColor = getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         setTeamTurn(nextColor);
     }
 
@@ -97,6 +103,17 @@ public class ChessGame {
         return possibleMoves;
     }
 
+    // Simulates a moves and returns if the result results in check or not
+    public boolean simulateMove(ChessMove move, TeamColor pieceColor) {
+        ChessBoard actualBoard = new ChessBoard(this.board);
+        ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        this.board.addPiece(move.getEndPosition(), piece);
+        this.board.removePiece(move.getStartPosition());
+        boolean result = isInCheck(pieceColor);
+        this.setBoard(actualBoard);
+        return result;
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -104,12 +121,15 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        // STEP ONE
-        // GO THROUGH PIECES OF THE OPPOSITE COLOR AND CHECK VALID MOVES
+        ChessPosition kingPosition = this.board.getKingPosition(teamColor);
         TeamColor enemy = getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         Collection<ChessMove> possibleMoves = teamMoves(enemy);
-
-        throw new RuntimeException("Not implemented");
+        for (ChessMove move : possibleMoves){
+            if(move.getEndPosition().equals(kingPosition)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
