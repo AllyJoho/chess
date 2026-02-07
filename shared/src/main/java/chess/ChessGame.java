@@ -56,10 +56,11 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         ChessPiece startPiece = this.board.getPiece(startPosition);
         for(ChessMove move : startPiece.pieceMoves(this.board, startPosition)){
-            if(!simulateMove(move, teamTurn)){
+            if(!simulateMove(move, startPiece.getTeamColor())){
                 possibleMoves.add(move);
             }
         }
+//        System.out.println(possibleMoves);
         return possibleMoves;
     }
 
@@ -122,10 +123,10 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition = this.board.getKingPosition(teamColor);
-        TeamColor enemy = getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        TeamColor enemy = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         Collection<ChessMove> possibleMoves = teamMoves(enemy);
         for (ChessMove move : possibleMoves){
-            if(move.getEndPosition().equals(kingPosition)) {
+            if((move.getEndPosition()).equals(kingPosition)) {
                 return true;
             }
         }
@@ -177,9 +178,11 @@ public class ChessGame {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
+//            System.out.println("Not the same class");
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
+//        System.out.println("Same Team: " + (teamTurn == chessGame.teamTurn));
         return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board);
     }
 
