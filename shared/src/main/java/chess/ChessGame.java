@@ -61,7 +61,6 @@ public class ChessGame {
                 possibleMoves.add(move);
             }
         }
-//        System.out.println(possibleMoves);
         return possibleMoves;
     }
 
@@ -194,11 +193,9 @@ public class ChessGame {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
-//            System.out.println("Not the same class");
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-//        System.out.println("Same Team: " + (teamTurn == chessGame.teamTurn));
         return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board);
     }
 
