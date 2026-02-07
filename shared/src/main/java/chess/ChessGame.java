@@ -19,6 +19,7 @@ public class ChessGame {
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
         this.board = new ChessBoard();
+        this.board.resetBoard();
     }
 
     /**
@@ -140,10 +141,16 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // STEP TWO AND LOGICAL EXTENSION
-        // THE REAL STEP ONE IS RETURNING A LIST
-        // AND GO THROUGH WAYS TO MAKE THE ISSUE GO AWAY
-        throw new RuntimeException("Not implemented");
+        if(isInCheck(teamColor)){
+            Collection<ChessPosition> piecesPositions = board.getTeamPositions(teamColor);
+            Collection<ChessMove> possibleMoves = new ArrayList<>();
+            for (ChessPosition pos : piecesPositions){
+                possibleMoves.addAll(validMoves(pos));
+            }
+            return possibleMoves.isEmpty();
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -154,7 +161,16 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(!isInCheck(teamColor)){
+            Collection<ChessPosition> piecesPositions = board.getTeamPositions(teamColor);
+            Collection<ChessMove> possibleMoves = new ArrayList<>();
+            for (ChessPosition pos : piecesPositions){
+                possibleMoves.addAll(validMoves(pos));
+            }
+            return possibleMoves.isEmpty();
+        }else{
+            return false;
+        }
     }
 
     /**
