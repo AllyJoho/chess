@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -80,11 +81,20 @@ public class ChessGame {
         if(move.getPromotionPiece() != null){
             piece = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
         }
-        piece.recordMoved();
+
         this.board.addPiece(endPosition, piece);
         this.board.removePiece(startPosition);
         TeamColor nextColor = getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         setTeamTurn(nextColor);
+    }
+
+    public Collection<ChessMove> teamMoves(TeamColor teamColor) {
+        Collection<ChessPosition> piecesPositions = board.getTeamPositions(teamColor);
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
+        for (ChessPosition pos : piecesPositions){
+            possibleMoves.addAll(this.board.getPiece(pos).pieceMoves(this.board,pos));
+        }
+        return possibleMoves;
     }
 
     /**
@@ -94,6 +104,11 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        // STEP ONE
+        // GO THROUGH PIECES OF THE OPPOSITE COLOR AND CHECK VALID MOVES
+        TeamColor enemy = getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        Collection<ChessMove> possibleMoves = teamMoves(enemy);
+
         throw new RuntimeException("Not implemented");
     }
 
@@ -104,6 +119,9 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        // STEP TWO AND LOGICAL EXTENSION
+        // THE REAL STEP ONE IS RETURNING A LIST
+        // AND GO THROUGH WAYS TO MAKE THE ISSUE GO AWAY
         throw new RuntimeException("Not implemented");
     }
 

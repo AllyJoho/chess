@@ -26,7 +26,9 @@ public class PawnMovesCalculator extends ChessMovesCalculator{
         moves = new ArrayList<>();
         int row1 = pieceColor == ChessGame.TeamColor.WHITE ? row+1 : row-1;
         for (int col1 = col-1; col1 <= col+1; col1++) {
-            if(col1 < 1 || col1 > 8) continue;
+            if(col1 < 1 || col1 > 8) {
+                continue;
+            }
             ChessPosition newPos = new ChessPosition(row1, col1);
             ChessPiece newPiece = board.getPiece(newPos);
             if(col == col1){
@@ -34,7 +36,7 @@ public class PawnMovesCalculator extends ChessMovesCalculator{
                     addPotentialMoves(myPos, newPos, row1);
                     if((row == 2 && pieceColor == ChessGame.TeamColor.WHITE) || (row == 7 && pieceColor == ChessGame.TeamColor.BLACK)){
                         int row2 = pieceColor == ChessGame.TeamColor.WHITE ? row+2 : row-2;
-                        if(board.getPiece(new ChessPosition(row2, col)) == null){
+                        if(board.getPiece(new ChessPosition(row2, col)) == null) {
                             addPotentialMoves(myPos, new ChessPosition(row2, col), row1);
                         }
                     }
