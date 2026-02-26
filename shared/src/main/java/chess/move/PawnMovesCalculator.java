@@ -10,6 +10,7 @@ public class PawnMovesCalculator extends ChessMovesCalculator{
     public PawnMovesCalculator(ChessGame.TeamColor color, ChessPiece.PieceType type){
         super(color, type);
     }
+
     private void addPotentialMoves(ChessPosition oldPos, ChessPosition newPos, int row){
         if(row == 1 || row == 8){
             moves.add(new ChessMove(oldPos, newPos, ChessPiece.PieceType.QUEEN));
@@ -20,6 +21,16 @@ public class PawnMovesCalculator extends ChessMovesCalculator{
             moves.add(new ChessMove(oldPos, newPos, null));
         }
     }
+
+    private void addDoubleJump(ChessBoard board, int row, int col, int row1, ChessPosition myPos){
+        if((row == 2 && pieceColor == ChessGame.TeamColor.WHITE) || (row == 7 && pieceColor == ChessGame.TeamColor.BLACK)){
+            int row2 = pieceColor == ChessGame.TeamColor.WHITE ? row+2 : row-2;
+            if(board.getPiece(new ChessPosition(row2, col)) == null) {
+                addPotentialMoves(myPos, new ChessPosition(row2, col), row1);
+            }
+        }
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPos){
         int row = myPos.getRow();
         int col = myPos.getColumn();
@@ -34,12 +45,7 @@ public class PawnMovesCalculator extends ChessMovesCalculator{
             if(col == col1){
                 if(newPiece == null){
                     addPotentialMoves(myPos, newPos, row1);
-                    if((row == 2 && pieceColor == ChessGame.TeamColor.WHITE) || (row == 7 && pieceColor == ChessGame.TeamColor.BLACK)){
-                        int row2 = pieceColor == ChessGame.TeamColor.WHITE ? row+2 : row-2;
-                        if(board.getPiece(new ChessPosition(row2, col)) == null) {
-                            addPotentialMoves(myPos, new ChessPosition(row2, col), row1);
-                        }
-                    }
+                    addDoubleJump(board, row, col, row1, myPos);
                 }
             } else if (newPiece != null && pieceColor != newPiece.getTeamColor()) {
                 addPotentialMoves(myPos, newPos, row1);

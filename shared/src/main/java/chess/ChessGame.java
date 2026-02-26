@@ -133,14 +133,9 @@ public class ChessGame {
         return false;
     }
 
-    /**
-     * Determines if the given team is in checkmate
-     *
-     * @param teamColor which team to check for checkmate
-     * @return True if the specified team is in checkmate
-     */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        if(isInCheck(teamColor)){
+    private boolean endGameCondition(TeamColor teamColor, boolean checkmate){
+        boolean isCheckingCheck = checkmate == isInCheck(teamColor);
+        if(isCheckingCheck){
             Collection<ChessPosition> piecesPositions = board.getTeamPositions(teamColor);
             Collection<ChessMove> possibleMoves = new ArrayList<>();
             for (ChessPosition pos : piecesPositions){
@@ -153,6 +148,16 @@ public class ChessGame {
     }
 
     /**
+     * Determines if the given team is in checkmate
+     *
+     * @param teamColor which team to check for checkmate
+     * @return True if the specified team is in checkmate
+     */
+    public boolean isInCheckmate(TeamColor teamColor) {
+        return endGameCondition(teamColor, true);
+    }
+
+    /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves while not in check.
      *
@@ -160,16 +165,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if(!isInCheck(teamColor)){
-            Collection<ChessPosition> piecesPositions = board.getTeamPositions(teamColor);
-            Collection<ChessMove> possibleMoves = new ArrayList<>();
-            for (ChessPosition pos : piecesPositions){
-                possibleMoves.addAll(validMoves(pos));
-            }
-            return possibleMoves.isEmpty();
-        }else{
-            return false;
-        }
+        return endGameCondition(teamColor, false);
     }
 
     /**

@@ -17,15 +17,12 @@ public class ChessPiece {
     private final PieceType type;
     private final ChessMovesCalculator movesCalculator;
     // To be accessed for Castling and En Passant. Still figuring out going to prioritize project.
-    private boolean moved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
-        this.moved = false;
         movesCalculator = switch (type) {
-            case KING -> new KingMovesCalculator(pieceColor, type);
-            case QUEEN -> new QueenMoveCalculator(pieceColor, type);
+            case KING, QUEEN -> new RoyaltyMovesCalculator(pieceColor, type);
             case BISHOP -> new BishopMovesCalculator(pieceColor, type);
             case KNIGHT -> new KnightMovesCalculator(pieceColor, type);
             case ROOK -> new RookMovesCalculator(pieceColor, type);
@@ -57,14 +54,6 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return type;
-    }
-
-    public boolean getIfMoved() {
-        return moved;
-    }
-
-    public void recordMoved() {
-        this.moved = true;
     }
 
     /**
