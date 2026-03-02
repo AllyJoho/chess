@@ -8,7 +8,7 @@ import java.util.UUID;
 public class MemoryAuthDAO extends AuthDAO {
     final private HashMap<String, AuthData> sessions = new HashMap<>();
     AuthData createAuth(AuthData a) throws DataAccessException{
-        AuthData session = new AuthData(a.getUsername(), generateToken());
+        AuthData session = new AuthData(a.getUsername(), a.getAuthToken());
         sessions.put(a.getAuthToken(), session);
         return session;
     }
