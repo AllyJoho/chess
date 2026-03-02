@@ -7,7 +7,6 @@ import java.util.HashMap;
 public class MemoryUserDAO extends UserDAO{
     private int nextId = 1;
     final private HashMap<Integer, UserData> users = new HashMap<>();
-    final private HashMap<Integer, UserData> sessions = new HashMap<>();
     public MemoryUserDAO(){
 
     }

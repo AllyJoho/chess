@@ -7,8 +7,4 @@ public class UserDAO {
     UserData createUser(UserData u) throws DataAccessException{
         return u;
     }
-    void createAuth(UserData u) throws DataAccessException{}
-    void getSession(String token) throws DataAccessException{}
-    void deleteSession(String token) throws DataAccessException{}
-    void clear() throws DataAccessException{}
 }
