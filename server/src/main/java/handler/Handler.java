@@ -18,7 +18,7 @@ public class Handler {
     public Handler(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess){
         this.userService = new UserService(userDataAccess, authDataAccess);
         this.authService = new AuthService(userDataAccess, authDataAccess, gameDataAccess);
-        this.gameService = new GameService();
+        this.gameService = new GameService(userDataAccess, gameDataAccess);
         this.serializer = new Gson();
     }
     public void clear(Context ctx){
@@ -86,14 +86,39 @@ public class Handler {
         if (authorized(ctx) == null) {
             return;
         }
+        ListGameResult result = null;
+        try {
+            result = gameService.listGames();
+            String json = serializer.toJson(result);
+            ctx.status(200);
+            ctx.json(json);
+        } catch (DataAccessException e) {
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+            ctx.status(500);
+            ctx.json(body);
+        }
     }
     public void createGame(Context ctx){
         if (authorized(ctx) == null) {
             return;
         }
-    }
+        CreateGameRequest request = serializer.fromJson(ctx.body(), CreateGameRequest.class);
+        CreateGameResult result = null;
+        try {
+            result = gameService.createGame(request);
+            String json = serializer.toJson(result);
+            ctx.status(200);
+            ctx.json(json);
+        } catch (DataAccessException e) {
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+            if (e.getMessage().contains("bad request")) {
+                ctx.status(400);
+            }
+            ctx.json(body);
+        }    }
     public void joinGame(Context ctx) {
-        if (authorized(ctx) == null) {
+        String authToken = authorized(ctx);
+        if (authToken == null) {
             return;
         }
     }
