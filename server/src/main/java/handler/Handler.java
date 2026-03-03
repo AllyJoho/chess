@@ -1,33 +1,39 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import io.javalin.http.Context;
 import request.*;
-import result.RegisterResult;
-import service.AuthService;
-import service.UserService;
+import result.*;
+import service.*;
 
 public class Handler {
-    private final UserDAO userDataAccess;
-    private final AuthDAO authDataAccess;
-    private final GameDAO gameDataAccess;
+    private final UserService userService;
+    private final AuthService authService;
+    private final GameService gameService;
+    private final Gson serializer;
 
     public Handler(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess){
-        this.userDataAccess = userDataAccess;
-        this.authDataAccess = authDataAccess;
-        this.gameDataAccess = gameDataAccess;
+        this.userService = new UserService(userDataAccess, authDataAccess);
+        this.authService = new AuthService(userDataAccess, authDataAccess, gameDataAccess);
+        this.gameService = new GameService();
+        this.serializer = new Gson();
+    }
+    public void clear(Context ctx){
+        try {
+            authService.clear();
+            ctx.status(200);
+        } catch (DataAccessException e) {
+            String json = serializer.toJson(e);
+            ctx.status(500);
+            ctx.json(json);
+        }
     }
     public void register(Context ctx){
-        var serializer = new Gson();
         RegisterRequest request = serializer.fromJson(ctx.body(), RegisterRequest.class);
-        UserService register = new UserService(userDataAccess, authDataAccess);
         RegisterResult result = null;
         try {
-            result = register.register(request);
+            result = userService.register(request);
             String json = serializer.toJson(result);
             ctx.status(200);
             ctx.json(json);
@@ -37,15 +43,17 @@ public class Handler {
             ctx.json(json);
         }
     }
-    public void clear(Context ctx){
-        var serializer = new Gson();
-        AuthService clear = new AuthService(userDataAccess, authDataAccess, gameDataAccess);
+    public void login(Context ctx){
+        LoginRequest request = serializer.fromJson(ctx.body(), LoginRequest.class);
+        LoginResult result = null;
         try {
-            clear.clear();
+            result = userService.login(request);
+            String json = serializer.toJson(result);
             ctx.status(200);
+            ctx.json(json);
         } catch (DataAccessException e) {
             String json = serializer.toJson(e);
-            ctx.status(500);
+            ctx.status(400);
             ctx.json(json);
         }
     }

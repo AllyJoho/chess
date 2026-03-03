@@ -18,8 +18,10 @@ public class UserService {
         AuthData auth = authDataAccess.createAuth(registerRequest.username());
         return new RegisterResult(auth.getUsername(),auth.getAuthToken());
     }
-    public LoginResult login(LoginRequest loginRequest) {
-        return null;
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        UserData user = userDataAccess.getUser(loginRequest.username(), loginRequest.password());
+        AuthData auth = authDataAccess.createAuth(user.getUsername());
+        return new LoginResult(user.getUsername(),auth.getAuthToken());
     }
     public void logout(LogoutRequest logoutRequest) {
 
