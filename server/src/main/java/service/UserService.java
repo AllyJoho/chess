@@ -4,8 +4,15 @@ import request.*;
 import result.*;
 
 public class UserService {
-    public RegisterResult register(RegisterRequest registerRequest) {}
-    public LoginResult login(LoginRequest loginRequest) {}
-    public void logout(LogoutRequest logoutRequest) {}
+    public RegisterResult register(RegisterRequest registerRequest) {
+
+        return null;
+    }
+    public LoginResult login(LoginRequest loginRequest) {
+        return null;
+    }
+    public void logout(LogoutRequest logoutRequest) {
+
+    }
 }
 
