@@ -24,6 +24,10 @@ public class AuthService {
         }
     }
 
+    public String getUser(String authToken) throws DataAccessException {
+        return authDataAccess.getSession(authToken).getUsername();
+    }
+
     public void clear() throws DataAccessException {
         userDataAccess.clear();
         authDataAccess.clear();

@@ -11,12 +11,20 @@ public class MemoryGameDAO extends GameDAO {
     final private HashMap<Integer, GameData> games = new HashMap<>();
     public GameData createGame(String gameName) throws DataAccessException{
         ChessGame chessGame = new ChessGame();
-        GameData game = new GameData(gameID++, null, null, gameName, chessGame);
+        GameData game = new GameData(gameID, null, null, gameName, chessGame);
         games.put(gameID, game);
+        gameID++;
         return game;
     }
-    public GameData getGame(Integer id) throws DataAccessException{return null;}
-    public GameData updateGame(GameData gameData) throws DataAccessException{return null;}
+    public GameData getGame(Integer id) throws DataAccessException{
+        if(!games.containsKey(id)){
+            throw new DataAccessException("bad request");
+        }
+        return games.get(id);
+    }
+    public void updateGame(GameData gameData) throws DataAccessException{
+        games.replace(gameData.getGameID(), gameData);
+    }
     public Collection<GameData> listGames() throws DataAccessException{
         return games.values();
     }

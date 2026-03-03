@@ -18,7 +18,7 @@ public class Handler {
     public Handler(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess){
         this.userService = new UserService(userDataAccess, authDataAccess);
         this.authService = new AuthService(userDataAccess, authDataAccess, gameDataAccess);
-        this.gameService = new GameService(userDataAccess, gameDataAccess);
+        this.gameService = new GameService(gameDataAccess);
         this.serializer = new Gson();
     }
     public void clear(Context ctx){
@@ -26,9 +26,7 @@ public class Handler {
             authService.clear();
             ctx.status(200);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
-            ctx.status(500);
-            ctx.json(body);
+            handleError(e, ctx);
         }
     }
     public void register(Context ctx){
@@ -40,13 +38,7 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
-            if (e.getMessage().contains("bad request")) {
-                ctx.status(400);
-            } else if (e.getMessage().contains("username already exists")) {
-                ctx.status(403);
-            }
-            ctx.json(body);
+            handleError(e, ctx);
         }
     }
     public void login(Context ctx){
@@ -58,13 +50,7 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
-            if (e.getMessage().contains("bad request")) {
-                ctx.status(400);
-            } else if (e.getMessage().contains("missing username/password")) {
-                ctx.status(401);
-            }
-            ctx.json(body);
+            handleError(e, ctx);
         }
     }
     public void logout(Context ctx) {
@@ -77,9 +63,7 @@ public class Handler {
             userService.logout(request);
             ctx.status(200);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
-            ctx.status(500);
-            ctx.json(body);
+            handleError(e, ctx);
         }
     }
     public void listGames(Context ctx){
@@ -93,9 +77,7 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
-            ctx.status(500);
-            ctx.json(body);
+            handleError(e, ctx);
         }
     }
     public void createGame(Context ctx){
@@ -110,16 +92,21 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
-            if (e.getMessage().contains("bad request")) {
-                ctx.status(400);
-            }
-            ctx.json(body);
-        }    }
+            handleError(e, ctx);
+        }
+    }
     public void joinGame(Context ctx) {
         String authToken = authorized(ctx);
         if (authToken == null) {
             return;
+        }
+        try {
+            JoinGameRequest ctxRequest = serializer.fromJson(ctx.body(), JoinGameRequest.class);
+            JoinGameRequest request = new JoinGameRequest(ctxRequest.playerColor(), ctxRequest.gameID(), authService.getUser(authToken));
+            gameService.joinGame(request);
+            ctx.status(200);
+        } catch (DataAccessException e) {
+            handleError(e, ctx);
         }
     }
     private String authorized(Context ctx) {
@@ -133,5 +120,17 @@ public class Handler {
         }
         return authToken;
     }
-
+    private void handleError(Exception e, Context ctx){
+        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+        if (e.getMessage().contains("bad request")) {
+            ctx.status(400);
+        } else if (e.getMessage().contains("unauthorized")) {
+            ctx.status(401);
+        } else if (e.getMessage().contains("already taken")) {
+            ctx.status(403);
+        } else {
+            ctx.status(500);
+        }
+        ctx.json(body);
+    }
 }
