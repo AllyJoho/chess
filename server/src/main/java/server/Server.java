@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.*;
 import handler.Handler;
 import io.javalin.*;
 
@@ -8,7 +9,10 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        Handler handler = new Handler();
+        UserDAO userDataAccess = new MemoryUserDAO();
+        AuthDAO authDataAccess = new MemoryAuthDAO();
+        GameDAO gameDataAccess = new MemoryGameDAO();
+        Handler handler = new Handler(userDataAccess, authDataAccess, gameDataAccess);
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", handler::register);
 

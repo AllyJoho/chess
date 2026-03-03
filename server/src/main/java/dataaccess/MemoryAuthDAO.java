@@ -7,18 +7,19 @@ import java.util.UUID;
 
 public class MemoryAuthDAO extends AuthDAO {
     final private HashMap<String, AuthData> sessions = new HashMap<>();
-    AuthData createAuth(AuthData a) throws DataAccessException{
-        AuthData session = new AuthData(a.getUsername(), a.getAuthToken());
-        sessions.put(a.getAuthToken(), session);
+    public AuthData createAuth(String username) throws DataAccessException{
+        String authToken = generateToken();
+        AuthData session = new AuthData(username, authToken);
+        sessions.put(authToken, session);
         return session;
     }
-    AuthData getSession(String token) throws DataAccessException{
+    public AuthData getSession(String token) throws DataAccessException{
         return sessions.get(token);
     }
-    void deleteSession(String token) throws DataAccessException{
+    public void deleteSession(String token) throws DataAccessException{
         sessions.remove(token);
     }
-    void clear() throws DataAccessException{
+    public void clear() throws DataAccessException{
         sessions.clear();
     }
     public static String generateToken() {

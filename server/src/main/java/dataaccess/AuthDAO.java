@@ -3,12 +3,12 @@ package dataaccess;
 import model.*;
 
 public class AuthDAO {
-    AuthData createAuth(AuthData a) throws DataAccessException{
+    public AuthData createAuth(String username) throws DataAccessException{
         throw new DataAccessException("not connected");
     }
-    AuthData getSession(String token) throws DataAccessException{
+    public AuthData getSession(String token) throws DataAccessException{
         return null;
     }
-    void deleteSession(String token) throws DataAccessException{}
-    void clear() throws DataAccessException{}
+    public void deleteSession(String token) throws DataAccessException{}
+    public void clear() throws DataAccessException{}
 }

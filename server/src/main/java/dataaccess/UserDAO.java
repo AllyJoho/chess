@@ -3,8 +3,8 @@ package dataaccess;
 import model.UserData;
 
 public class UserDAO {
-    void getUser(UserData u) throws DataAccessException{}
-    UserData createUser(UserData u) throws DataAccessException{
-        return u;
+    public UserData createUser(UserData u) throws DataAccessException{return null;}
+    public UserData createAuth(UserData u) throws DataAccessException{return null;}
+    public void clear() throws DataAccessException{
     }
 }
