@@ -24,7 +24,7 @@ public class UserService {
         return new LoginResult(user.getUsername(),auth.getAuthToken());
     }
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
-        authDataAccess.getSession(logoutRequest.authToken());
+        authDataAccess.deleteSession(logoutRequest.authToken());
     }
 }
 

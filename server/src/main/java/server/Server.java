@@ -17,6 +17,9 @@ public class Server {
                 .post("/user", handler::register)
                 .post("/session", handler::login)
                 .delete("/session", handler::logout)
+                .get("/game", handler::listGames)
+                .post("/game", handler::createGame)
+                .put("/game", handler::joinGame)
                 .delete("/db", handler::clear);
 
         // Register your endpoints and exception handlers here.

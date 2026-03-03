@@ -74,6 +74,55 @@ public class Handler {
             ctx.json(body);
         }
     }
+    public void listGames(Context ctx){
+        if (authorized(ctx) == null) {
+            return;
+        }
+        RegisterRequest request = serializer.fromJson(ctx.body(), RegisterRequest.class);
+        RegisterResult result = null;
+        try {
+            result = userService.register(request);
+            String json = serializer.toJson(result);
+            ctx.status(200);
+            ctx.json(json);
+        } catch (DataAccessException e) {
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
+            ctx.status(400);
+            ctx.json(body);
+        }
+    }
+    public void createGame(Context ctx){
+        if (authorized(ctx) == null) {
+            return;
+        }
+        RegisterRequest request = serializer.fromJson(ctx.body(), RegisterRequest.class);
+        RegisterResult result = null;
+        try {
+            result = userService.register(request);
+            String json = serializer.toJson(result);
+            ctx.status(200);
+            ctx.json(json);
+        } catch (DataAccessException e) {
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
+            ctx.status(400);
+            ctx.json(body);
+        }
+    }
+    public void joinGame(Context ctx) {
+        String authToken = authorized(ctx);
+        if (authorized(ctx) == null) {
+            return;
+        }
+        LogoutRequest request = new LogoutRequest(authToken);
+        try {
+            userService.logout(request);
+            ctx.status(200);
+        } catch (DataAccessException e) {
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+            ctx.status(500);
+            ctx.json(body);
+        }
+    }
     private String authorized(Context ctx) {
         String authToken = ctx.header("Authorization");
         if (!authService.authorize(authToken)) {
