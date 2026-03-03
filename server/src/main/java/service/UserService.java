@@ -13,12 +13,18 @@ public class UserService {
         this.authDataAccess = authDataAccess;
     }
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
+            throw new DataAccessException("bad request");
+        }
         UserData user = new UserData(registerRequest.username(),registerRequest.password(),registerRequest.email());
         userDataAccess.createUser(user);
         AuthData auth = authDataAccess.createAuth(registerRequest.username());
         return new RegisterResult(auth.getUsername(),auth.getAuthToken());
     }
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        if (loginRequest.username() == null || loginRequest.password() == null) {
+            throw new DataAccessException("bad request");
+        }
         UserData user = userDataAccess.getUser(loginRequest.username(), loginRequest.password());
         AuthData auth = authDataAccess.createAuth(user.getUsername());
         return new LoginResult(user.getUsername(),auth.getAuthToken());

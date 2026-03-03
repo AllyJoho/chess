@@ -26,7 +26,7 @@ public class Handler {
             authService.clear();
             ctx.status(200);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
             ctx.status(500);
             ctx.json(body);
         }
@@ -40,8 +40,12 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
-            ctx.status(400);
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+            if (e.getMessage().contains("bad request")) {
+                ctx.status(400);
+            } else if (e.getMessage().contains("username already exists")) {
+                ctx.status(403);
+            }
             ctx.json(body);
         }
     }
@@ -54,14 +58,18 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
-            ctx.status(400);
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+            if (e.getMessage().contains("bad request")) {
+                ctx.status(400);
+            } else if (e.getMessage().contains("missing username/password")) {
+                ctx.status(401);
+            }
             ctx.json(body);
         }
     }
     public void logout(Context ctx) {
         String authToken = authorized(ctx);
-        if (authorized(ctx) == null) {
+        if (authToken == null) {
             return;
         }
         LogoutRequest request = new LogoutRequest(authToken);
@@ -78,57 +86,24 @@ public class Handler {
         if (authorized(ctx) == null) {
             return;
         }
-        RegisterRequest request = serializer.fromJson(ctx.body(), RegisterRequest.class);
-        RegisterResult result = null;
-        try {
-            result = userService.register(request);
-            String json = serializer.toJson(result);
-            ctx.status(200);
-            ctx.json(json);
-        } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
-            ctx.status(400);
-            ctx.json(body);
-        }
     }
     public void createGame(Context ctx){
         if (authorized(ctx) == null) {
             return;
         }
-        RegisterRequest request = serializer.fromJson(ctx.body(), RegisterRequest.class);
-        RegisterResult result = null;
-        try {
-            result = userService.register(request);
-            String json = serializer.toJson(result);
-            ctx.status(200);
-            ctx.json(json);
-        } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
-            ctx.status(400);
-            ctx.json(body);
-        }
     }
     public void joinGame(Context ctx) {
-        String authToken = authorized(ctx);
         if (authorized(ctx) == null) {
             return;
-        }
-        LogoutRequest request = new LogoutRequest(authToken);
-        try {
-            userService.logout(request);
-            ctx.status(200);
-        } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
-            ctx.status(500);
-            ctx.json(body);
         }
     }
     private String authorized(Context ctx) {
         String authToken = ctx.header("Authorization");
         if (!authService.authorize(authToken)) {
             ctx.contentType("application/json");
+            var body = new Gson().toJson(Map.of("message", "Error: unauthorized"));
             ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("msg", "invalid authorization")));
+            ctx.json(body);
             return null;
         }
         return authToken;

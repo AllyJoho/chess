@@ -16,7 +16,7 @@ public class MemoryAuthDAO extends AuthDAO {
     public AuthData getSession(String token) throws DataAccessException{
         AuthData session = sessions.get(token);
         if (session == null) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new DataAccessException("unauthorized");
         }
         return session;
     }

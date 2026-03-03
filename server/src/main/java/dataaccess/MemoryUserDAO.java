@@ -12,17 +12,17 @@ public class MemoryUserDAO extends UserDAO{
     }
     public UserData getUser(String username, String password) throws DataAccessException{
         if(!users.containsKey(username)){
-            throw new DataAccessException("no username");
+            throw new DataAccessException("missing username/password");
         }
         UserData user = users.get(username);
         if(!Objects.equals(user.getPassword(), password)){
-            throw new DataAccessException("wrong password");
+            throw new DataAccessException("missing username/password");
         }
         return user;
     }
     public UserData createUser(UserData u) throws DataAccessException{
         if(users.containsKey(u.getUsername())){
-            throw new DataAccessException("username there already");
+            throw new DataAccessException("username already exists");
         }
         UserData user = new UserData(u.getUsername(), u.getPassword(), u.getEmail());
         users.put(u.getUsername(), user);
