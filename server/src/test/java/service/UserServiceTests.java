@@ -2,7 +2,7 @@ package java.service;
 
 import org.junit.jupiter.api.Test;
 
-class UserServiceTest {
+class UserServiceTests {
 
     @Test
     void register() {

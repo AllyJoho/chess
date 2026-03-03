@@ -7,6 +7,8 @@ import request.*;
 import result.*;
 import service.*;
 
+import java.util.Map;
+
 public class Handler {
     private final UserService userService;
     private final AuthService authService;
@@ -24,9 +26,9 @@ public class Handler {
             authService.clear();
             ctx.status(200);
         } catch (DataAccessException e) {
-            String json = serializer.toJson(e);
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
             ctx.status(500);
-            ctx.json(json);
+            ctx.json(body);
         }
     }
     public void register(Context ctx){
@@ -38,9 +40,9 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            String json = serializer.toJson(e);
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
             ctx.status(400);
-            ctx.json(json);
+            ctx.json(body);
         }
     }
     public void login(Context ctx){
@@ -52,9 +54,35 @@ public class Handler {
             ctx.status(200);
             ctx.json(json);
         } catch (DataAccessException e) {
-            String json = serializer.toJson(e);
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
             ctx.status(400);
-            ctx.json(json);
+            ctx.json(body);
         }
     }
+    public void logout(Context ctx) {
+        String authToken = authorized(ctx);
+        if (authorized(ctx) == null) {
+            return;
+        }
+        LogoutRequest request = new LogoutRequest(authToken);
+        try {
+            userService.logout(request);
+            ctx.status(200);
+        } catch (DataAccessException e) {
+            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+            ctx.status(500);
+            ctx.json(body);
+        }
+    }
+    private String authorized(Context ctx) {
+        String authToken = ctx.header("Authorization");
+        if (!authService.authorize(authToken)) {
+            ctx.contentType("application/json");
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("msg", "invalid authorization")));
+            return null;
+        }
+        return authToken;
+    }
+
 }

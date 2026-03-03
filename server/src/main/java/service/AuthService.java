@@ -14,6 +14,16 @@ public class AuthService {
         this.authDataAccess = authDataAccess;
         this.gameDataAccess = gameDataAccess;
     }
+
+    public boolean authorize(String authToken){
+        try {
+            authDataAccess.getSession(authToken);
+            return true;
+        } catch (DataAccessException e) {
+            return false;
+        }
+    }
+
     public void clear() throws DataAccessException {
         userDataAccess.clear();
         authDataAccess.clear();
