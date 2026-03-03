@@ -14,7 +14,8 @@ public class Server {
         GameDAO gameDataAccess = new MemoryGameDAO();
         Handler handler = new Handler(userDataAccess, authDataAccess, gameDataAccess);
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/user", handler::register);
+                .post("/user", handler::register)
+                .delete("/db", handler::clear);
 
         // Register your endpoints and exception handlers here.
 

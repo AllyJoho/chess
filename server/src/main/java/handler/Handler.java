@@ -8,6 +8,7 @@ import dataaccess.UserDAO;
 import io.javalin.http.Context;
 import request.*;
 import result.RegisterResult;
+import service.AuthService;
 import service.UserService;
 
 public class Handler {
@@ -33,6 +34,18 @@ public class Handler {
         } catch (DataAccessException e) {
             String json = serializer.toJson(e);
             ctx.status(400);
+            ctx.json(json);
+        }
+    }
+    public void clear(Context ctx){
+        var serializer = new Gson();
+        AuthService clear = new AuthService(userDataAccess, authDataAccess, gameDataAccess);
+        try {
+            clear.clear();
+            ctx.status(200);
+        } catch (DataAccessException e) {
+            String json = serializer.toJson(e);
+            ctx.status(500);
             ctx.json(json);
         }
     }
