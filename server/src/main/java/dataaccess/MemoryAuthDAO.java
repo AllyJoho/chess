@@ -21,6 +21,9 @@ public class MemoryAuthDAO extends AuthDAO {
         return session;
     }
     public void deleteSession(String token) throws DataAccessException{
+        if(!sessions.containsKey(token)){
+            throw new DataAccessException("unauthorized");
+        }
         sessions.remove(token);
     }
     public void clear() throws DataAccessException{
