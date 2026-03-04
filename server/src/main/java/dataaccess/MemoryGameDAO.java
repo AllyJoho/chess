@@ -3,8 +3,9 @@ package dataaccess;
 import chess.ChessGame;
 import model.*;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MemoryGameDAO extends GameDAO {
     private int gameID = 1;
@@ -25,8 +26,8 @@ public class MemoryGameDAO extends GameDAO {
     public void updateGame(GameData gameData) throws DataAccessException{
         games.replace(gameData.getGameID(), gameData);
     }
-    public Collection<GameData> listGames() throws DataAccessException{
-        return games.values();
+    public List<GameData> listGames() throws DataAccessException{
+        return new ArrayList<>(games.values());
     }
     public void clear() throws DataAccessException{
         gameID = 1;
