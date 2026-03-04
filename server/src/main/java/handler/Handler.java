@@ -16,14 +16,14 @@ public class Handler {
     private final Gson serializer;
 
     public Handler(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess){
-        this.userService = new UserService(userDataAccess, authDataAccess);
-        this.authService = new AuthService(userDataAccess, authDataAccess, gameDataAccess);
+        this.userService = new UserService(userDataAccess, authDataAccess, gameDataAccess);
+        this.authService = new AuthService(authDataAccess);
         this.gameService = new GameService(gameDataAccess);
         this.serializer = new Gson();
     }
     public void clear(Context ctx){
         try {
-            authService.clear();
+            userService.clear();
             ctx.status(200);
         } catch (DataAccessException e) {
             handleError(e, ctx);

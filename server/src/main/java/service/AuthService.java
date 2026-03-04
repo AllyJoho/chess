@@ -5,14 +5,10 @@ import model.*;
         import result.*;
 
 public class AuthService {
-    private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
-    private final GameDAO gameDataAccess;
 
-    public AuthService(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess) {
-        this.userDataAccess = userDataAccess;
+    public AuthService(AuthDAO authDataAccess) {
         this.authDataAccess = authDataAccess;
-        this.gameDataAccess = gameDataAccess;
     }
 
     public boolean authorize(String authToken){
@@ -26,11 +22,5 @@ public class AuthService {
 
     public String getUser(String authToken) throws DataAccessException {
         return authDataAccess.getSession(authToken).getUsername();
-    }
-
-    public void clear() throws DataAccessException {
-        userDataAccess.clear();
-        authDataAccess.clear();
-        gameDataAccess.clear();
     }
 }

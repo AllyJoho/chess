@@ -7,10 +7,12 @@ import result.*;
 public class UserService {
     private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
+    private final GameDAO gameDataAccess;
 
-    public UserService(UserDAO userDataAccess, AuthDAO authDataAccess) {
+    public UserService(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess) {
         this.userDataAccess = userDataAccess;
         this.authDataAccess = authDataAccess;
+        this.gameDataAccess = gameDataAccess;;
     }
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
@@ -31,6 +33,11 @@ public class UserService {
     }
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
         authDataAccess.deleteSession(logoutRequest.authToken());
+    }
+    public void clear() throws DataAccessException {
+        userDataAccess.clear();
+        authDataAccess.clear();
+        gameDataAccess.clear();
     }
 }
 
