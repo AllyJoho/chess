@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MemoryGameDAO extends GameDAO {
+public class MySqlGameDAO  extends GameDAO {
     private int gameID = 1;
     final private HashMap<Integer, GameData> games = new HashMap<>();
     public GameData createGame(String gameName) throws DataAccessException{

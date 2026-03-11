@@ -5,7 +5,7 @@ import model.AuthData;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class MemoryAuthDAO extends AuthDAO {
+public class MySqlAuthDAO extends AuthDAO {
     final private HashMap<String, AuthData> sessions = new HashMap<>();
     public AuthData createAuth(String username) throws DataAccessException{
         String authToken = generateToken();

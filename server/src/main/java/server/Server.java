@@ -9,9 +9,9 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        UserDAO userDataAccess = new MemoryUserDAO();
-        AuthDAO authDataAccess = new MemoryAuthDAO();
-        GameDAO gameDataAccess = new MemoryGameDAO();
+        UserDAO userDataAccess = new MySqlUserDAO();
+        AuthDAO authDataAccess = new MySqlAuthDAO();
+        GameDAO gameDataAccess = new MySqlGameDAO();
         Handler handler = new Handler(userDataAccess, authDataAccess, gameDataAccess);
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", handler::register)

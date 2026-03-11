@@ -1,8 +1,5 @@
 package service;
 import dataaccess.*;
-import model.*;
-        import request.*;
-        import result.*;
 
 public class AuthService {
     private final AuthDAO authDataAccess;

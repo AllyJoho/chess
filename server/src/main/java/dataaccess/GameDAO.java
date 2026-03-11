@@ -1,9 +1,7 @@
 package dataaccess;
 
-import model.*;
+import model.GameData;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 public class GameDAO {
