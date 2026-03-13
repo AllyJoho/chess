@@ -11,9 +11,6 @@ public class MemoryUserDAO extends UserDAO{
 
     }
     public UserData getUser(String username) throws DataAccessException{
-//        if(!users.containsKey(username)){
-//            throw new DataAccessException("unauthorized");
-//        }
         return users.get(username);
     }
     public boolean verifyUser(UserData u, String password){

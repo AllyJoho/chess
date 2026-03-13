@@ -19,7 +19,7 @@ public class UserService {
             throw new DataAccessException("bad request");
         }
         if(userDataAccess.getUser(registerRequest.username()) != null){
-            throw new DataAccessException("unauthorized");
+            throw new DataAccessException("already taken");
         }
         UserData user = new UserData(registerRequest.username(),registerRequest.password(),registerRequest.email());
         userDataAccess.createUser(user);

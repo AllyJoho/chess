@@ -8,7 +8,7 @@ import request.*;
 import result.*;
 
 public class GameServiceTests {
-    GameDAO gameDataAccess = new MemoryGameDAO();
+    GameDAO gameDataAccess = new MySqlGameDAO();
     GameService gameService = new GameService(gameDataAccess);
 
     @Test

@@ -37,9 +37,6 @@ public class MySqlUserDAO extends UserDAO{
     }
 
     public UserData createUser(UserData u) throws DataAccessException{
-        if(getUser(u.getUsername()) != null){
-            throw new DataAccessException("already taken");
-        }
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO users values (?, ?, ?)")) {
                 preparedStatement.setString(1, u.getUsername());
@@ -50,6 +47,9 @@ public class MySqlUserDAO extends UserDAO{
                 return u;
             }
         } catch (SQLException e) {
+            if(e.getErrorCode() == 1062){
+                throw new DataAccessException("already taken");
+            }
             throw new RuntimeException(e);
         }
     }

@@ -7,7 +7,7 @@ import request.*;
 import result.*;
 
 class UserServiceTests {
-    UserDAO userDataAccess = new MemoryUserDAO();
+    UserDAO userDataAccess = new MySqlUserDAO();
     AuthDAO authDataAccess = new MemoryAuthDAO();
     GameDAO gameDataAccess = new MemoryGameDAO();
     UserService userService = new UserService(userDataAccess, authDataAccess, gameDataAccess);

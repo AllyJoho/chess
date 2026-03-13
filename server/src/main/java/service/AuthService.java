@@ -1,5 +1,6 @@
 package service;
 import dataaccess.*;
+import model.AuthData;
 
 public class AuthService {
     private final AuthDAO authDataAccess;
@@ -10,7 +11,10 @@ public class AuthService {
 
     public boolean authorize(String authToken){
         try {
-            authDataAccess.getSession(authToken);
+            AuthData session = authDataAccess.getSession(authToken);
+            if (session == null) {
+                return false;
+            }
             return true;
         } catch (DataAccessException e) {
             return false;
@@ -18,6 +22,10 @@ public class AuthService {
     }
 
     public String getUser(String authToken) throws DataAccessException {
-        return authDataAccess.getSession(authToken).getUsername();
+        AuthData session = authDataAccess.getSession(authToken);
+        if (session == null) {
+            throw new DataAccessException("unauthorized");
+        }
+        return session.getUsername();
     }
 }
