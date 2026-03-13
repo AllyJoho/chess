@@ -9,7 +9,12 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        UserDAO userDataAccess = new MySqlUserDAO();
+        UserDAO userDataAccess = null;
+        try {
+            userDataAccess = new MySqlUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         AuthDAO authDataAccess = new MySqlAuthDAO();
         GameDAO gameDataAccess = new MySqlGameDAO();
         Handler handler = new Handler(userDataAccess, authDataAccess, gameDataAccess);
