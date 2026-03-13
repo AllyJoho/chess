@@ -3,57 +3,45 @@ package dataaccess;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.HashMap;
-import java.util.Objects;
-
 import java.sql.*;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
-
 public class MySqlUserDAO extends UserDAO{
-    public MySqlUserDAO() throws DataAccessException {
-        configureDatabase();
-    }
-    public void example() throws Exception {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users where username = ?")) {
-                preparedStatement.setString(1, u.getUsername());
-                ResultSet rs = preparedStatement.executeQuery();
-                rs.next();
-                rs.getString("username");
-                System.out.println(rs.getInt(1));
-            }
+    public MySqlUserDAO() {
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
-    final private HashMap<String, UserData> users = new HashMap<>();
-    public UserData getUser(String username, String password) throws DataAccessException{
-//        if(!users.containsKey(username)){
-//            throw new DataAccessException("unauthorized");
-//        }
-//        UserData user = users.get(username);
-//        if(!Objects.equals(user.getPassword(), password)){
-//            throw new DataAccessException("unauthorized");
-//        }
-//        return user;
+
+    public UserData getUser(String username) throws DataAccessException{
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users where username = ?")) {
                 preparedStatement.setString(1, username);
                 ResultSet rs = preparedStatement.executeQuery();
-                rs.next();
-                rs.getString("username");
-                System.out.println(rs.getInt(1));
+                if(rs.next()){
+                    String resultUsername = rs.getString("username");
+                    String resultEmail = rs.getString("email");
+                    String resultPasswordHash = rs.getString("password_hash");
+                    return new UserData(resultUsername, resultPasswordHash, resultEmail);
+                }
+                return null;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
+    public boolean verifyUser(UserData u, String password){
+        return BCrypt.checkpw(password, u.getPassword());
+    }
+
     public UserData createUser(UserData u) throws DataAccessException{
-        if(getUser(u.getUsername(), u.getUsername()) != null){
+        if(getUser(u.getUsername()) != null){
             throw new DataAccessException("already taken");
         }
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO users values (?, ?, ?)")) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO users values (?, ?, ?)")) {
                 preparedStatement.setString(1, u.getUsername());
                 preparedStatement.setString(2, u.getEmail());
                 String hashedPassword = BCrypt.hashpw(u.getPassword(), BCrypt.gensalt());
@@ -65,19 +53,16 @@ public class MySqlUserDAO extends UserDAO{
             throw new RuntimeException(e);
         }
     }
-    public void clear() throws DataAccessException{
-        users.clear();
-    }
 
-//    private int getQuery(String statement) throws DataAccessException, SQLException {
-//        try (var conn = DatabaseManager.getConnection()) {
-//            try (var preparedStatement = conn.prepareStatement(statement)) {
-//                var rs = preparedStatement.executeQuery();
-//                rs.next();
-//                System.out.println(rs.getInt(1));
-//            }
-//        }
-//    }
+    public void clear() throws DataAccessException{
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement("TRUNCATE users")) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final String[] createStatements = {
             """

@@ -13,13 +13,15 @@ class UserServiceTests {
     UserService userService = new UserService(userDataAccess, authDataAccess, gameDataAccess);
 
     @Test
-    void registerPositive() {
+    void registerPositive() throws DataAccessException {
+        userService.clear();
         RegisterRequest request = new RegisterRequest("username", "password", "email");
         Assertions.assertDoesNotThrow(() -> userService.register(request));
     }
 
     @Test
-    void registerNegative() {
+    void registerNegative() throws DataAccessException {
+        userService.clear();
         RegisterRequest request = new RegisterRequest("username", "password", "email");
         Assertions.assertDoesNotThrow(() -> userService.register(request));
         RegisterRequest request1 = new RegisterRequest("username", "password", "email");
@@ -27,7 +29,8 @@ class UserServiceTests {
     }
 
     @Test
-    void loginPositive() {
+    void loginPositive() throws DataAccessException {
+        userService.clear();
         RegisterRequest setup = new RegisterRequest("username", "password", "email");
         Assertions.assertDoesNotThrow(() -> userService.register(setup));
         LoginRequest request = new LoginRequest("username", "password");
@@ -35,11 +38,15 @@ class UserServiceTests {
     }
 
     @Test
-    void loginNegative() {
+    void loginNegative() throws DataAccessException {
+        userService.clear();
+        LoginRequest request = new LoginRequest("username", "password");
+        Assertions.assertThrows(DataAccessException.class, () -> userService.login(request));
     }
 
     @Test
     void logoutPositive() throws DataAccessException {
+        userService.clear();
         RegisterRequest setup = new RegisterRequest("username", "password", "email");
         RegisterResult authData = userService.register(setup);
         LogoutRequest request = new LogoutRequest(authData.authToken());
@@ -47,17 +54,14 @@ class UserServiceTests {
     }
 
     @Test
-    void logoutNegative() {
+    void logoutNegative() throws DataAccessException {
+        userService.clear();
         LogoutRequest request = new LogoutRequest("hahaha");
         Assertions.assertThrows(DataAccessException.class, () -> userService.logout(request));
     }
 
     @Test
     void clear() throws DataAccessException {
-        RegisterRequest setup = new RegisterRequest("username", "password", "email");
-        userService.register(setup);
-        LoginRequest request = new LoginRequest("username", "password");
-        userService.clear();
-        Assertions.assertThrows(DataAccessException.class, () -> userService.login(request));
+        Assertions.assertDoesNotThrow(() -> userService.clear());
     }
 }

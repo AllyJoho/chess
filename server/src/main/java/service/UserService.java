@@ -18,6 +18,9 @@ public class UserService {
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new DataAccessException("bad request");
         }
+        if(userDataAccess.getUser(registerRequest.username()) != null){
+            throw new DataAccessException("unauthorized");
+        }
         UserData user = new UserData(registerRequest.username(),registerRequest.password(),registerRequest.email());
         userDataAccess.createUser(user);
         AuthData auth = authDataAccess.createAuth(registerRequest.username());
@@ -27,7 +30,12 @@ public class UserService {
         if (loginRequest.username() == null || loginRequest.password() == null) {
             throw new DataAccessException("bad request");
         }
-        UserData user = userDataAccess.getUser(loginRequest.username(), loginRequest.password());
+        UserData user = userDataAccess.getUser(loginRequest.username());
+        if(user == null){
+            throw new DataAccessException("unauthorized");
+        } else if (!userDataAccess.verifyUser(user, loginRequest.password())) {
+            throw new DataAccessException("unauthorized");
+        }
         AuthData auth = authDataAccess.createAuth(user.getUsername());
         return new LoginResult(user.getUsername(),auth.getAuthToken());
     }

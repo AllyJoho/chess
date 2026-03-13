@@ -10,15 +10,14 @@ public class MemoryUserDAO extends UserDAO{
     public MemoryUserDAO(){
 
     }
-    public UserData getUser(String username, String password) throws DataAccessException{
-        if(!users.containsKey(username)){
-            throw new DataAccessException("unauthorized");
-        }
-        UserData user = users.get(username);
-        if(!Objects.equals(user.getPassword(), password)){
-            throw new DataAccessException("unauthorized");
-        }
-        return user;
+    public UserData getUser(String username) throws DataAccessException{
+//        if(!users.containsKey(username)){
+//            throw new DataAccessException("unauthorized");
+//        }
+        return users.get(username);
+    }
+    public boolean verifyUser(UserData u, String password){
+        return Objects.equals(u.getPassword(), password);
     }
     public UserData createUser(UserData u) throws DataAccessException{
         if(users.containsKey(u.getUsername())){

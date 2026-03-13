@@ -7,6 +7,17 @@ import java.util.UUID;
 
 public class MySqlAuthDAO extends AuthDAO {
     final private HashMap<String, AuthData> sessions = new HashMap<>();
+
+//    public void example() throws Exception {
+//        try (Connection conn = DatabaseManager.getConnection()) {
+//            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT 1+1")) {
+//                ResultSet rs = preparedStatement.executeQuery();
+//                rs.next();
+//                System.out.println(rs.getInt(1));
+//            }
+//        }
+//    }
+
     public AuthData createAuth(String username) throws DataAccessException{
         String authToken = generateToken();
         AuthData session = new AuthData(authToken, username);
