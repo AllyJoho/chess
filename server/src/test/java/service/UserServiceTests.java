@@ -8,8 +8,8 @@ import result.*;
 
 class UserServiceTests {
     UserDAO userDataAccess = new MySqlUserDAO();
-    AuthDAO authDataAccess = new MemoryAuthDAO();
-    GameDAO gameDataAccess = new MemoryGameDAO();
+    AuthDAO authDataAccess = new MySqlAuthDAO();
+    GameDAO gameDataAccess = new MySqlGameDAO();
     UserService userService = new UserService(userDataAccess, authDataAccess, gameDataAccess);
 
     @Test

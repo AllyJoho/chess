@@ -111,12 +111,16 @@ public class Handler {
     }
     private String authorized(Context ctx) {
         String authToken = ctx.header("Authorization");
-        if (!authService.authorize(authToken)) {
-            ctx.contentType("application/json");
-            var body = new Gson().toJson(Map.of("message", "Error: unauthorized"));
-            ctx.status(401);
-            ctx.json(body);
-            return null;
+        try {
+            if (!authService.authorize(authToken)) {
+                ctx.contentType("application/json");
+                var body = new Gson().toJson(Map.of("message", "Error: unauthorized"));
+                ctx.status(401);
+                ctx.json(body);
+                return null;
+            }
+        } catch (DataAccessException e) {
+            handleError(e, ctx);
         }
         return authToken;
     }
