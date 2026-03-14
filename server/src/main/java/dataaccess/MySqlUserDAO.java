@@ -28,7 +28,7 @@ public class MySqlUserDAO extends UserDAO{
                 return null;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
@@ -60,7 +60,7 @@ public class MySqlUserDAO extends UserDAO{
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 

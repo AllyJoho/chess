@@ -40,13 +40,13 @@ public class MySqlGameDAO  extends GameDAO {
                 return game;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
     public GameData getGame(Integer id) throws DataAccessException{
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM games where game_id = ?")) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM games WHERE game_id = ?")) {
                 preparedStatement.setInt(1, id);
                 ResultSet rs = preparedStatement.executeQuery();
                 if(rs.next()){
@@ -63,7 +63,7 @@ public class MySqlGameDAO  extends GameDAO {
                 return null;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 

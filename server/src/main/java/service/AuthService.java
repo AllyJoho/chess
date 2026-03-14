@@ -12,12 +12,6 @@ public class AuthService {
     public boolean authorize(String authToken) throws DataAccessException {
         AuthData session = authDataAccess.getSession(authToken);
         return session != null;
-//        try {
-//            AuthData session = authDataAccess.getSession(authToken);
-//            return session != null;
-//        } catch (DataAccessException e) {
-//            return false;
-//        }
     }
 
     public String getUser(String authToken) throws DataAccessException {

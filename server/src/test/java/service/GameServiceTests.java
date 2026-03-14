@@ -3,28 +3,34 @@ package service;
 import dataaccess.*;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import request.*;
 import result.*;
 
 public class GameServiceTests {
+    UserDAO userDataAccess = new MySqlUserDAO();
+    AuthDAO authDataAccess = new MySqlAuthDAO();
     GameDAO gameDataAccess = new MySqlGameDAO();
+    UserService userService = new UserService(userDataAccess, authDataAccess, gameDataAccess);
     GameService gameService = new GameService(gameDataAccess);
 
     @Test
+    void listGamesNegative() throws DataAccessException {
+        userService.clear();
+        ListGameResult games = gameService.listGames();
+        Assertions.assertEquals(0, games.games().toArray().length);
+    }
+
+    @Test
     void listGamesPositive() throws DataAccessException {
+        userService.clear();
         CreateGameRequest request = new CreateGameRequest("blah");
         gameService.createGame(request);
         ListGameResult games = gameService.listGames();
         GameData firstGame = games.games().getFirst();
         Assertions.assertEquals(1, games.games().toArray().length);
         Assertions.assertEquals("blah", firstGame.getGameName());
-    }
-
-    @Test
-    void listGamesNegative() throws DataAccessException {
-        ListGameResult games = gameService.listGames();
-        Assertions.assertEquals(0, games.games().toArray().length);
     }
 
     @Test

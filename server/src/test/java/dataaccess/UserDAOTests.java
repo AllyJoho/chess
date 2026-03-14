@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 public class UserDAOTests {
     MySqlUserDAO dao = new MySqlUserDAO();
     UserData user = new UserData("name", "password", "email");
-    UserData user1 = new UserData("name", "password", "email");
     @Test
     public void createUserPositive() throws DataAccessException {
         dao.clear();

@@ -45,7 +45,7 @@ public class MySqlAuthDAO extends AuthDAO {
                 return null;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
@@ -66,7 +66,7 @@ public class MySqlAuthDAO extends AuthDAO {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
     private static String generateToken() {
