@@ -2,22 +2,21 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
-import request.CreateGameRequest;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class MySqlGameDAO  extends GameDAO {
+    private final Gson serializer;
+
     public MySqlGameDAO() {
         this.serializer = new Gson();
         try {
@@ -26,20 +25,10 @@ public class MySqlGameDAO  extends GameDAO {
             throw new RuntimeException(e);
         }
     }
-
-    private final Gson serializer;
-    final private HashMap<Integer, GameData> games = new HashMap<>();
-
     public GameData createGame(String gameName) throws DataAccessException{
         ChessGame chessGame = new ChessGame();
-//        GameData game = new GameData(gameID, null, null, gameName, chessGame);
-//        games.put(gameID, game);
-//        gameID++;
-//        return game;
-//        GameData game = new GameData(gameID, null, null, gameName, chessGame);
         String statement = "INSERT INTO games (game_name, white_username, black_username, game_json) \n" +
                 "VALUES (?, \"\", \"\", ?)";
-//        "INSERT INTO games (game_name, game_json) values (?, ?)"
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement preparedStatement = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, gameName);
@@ -76,10 +65,6 @@ public class MySqlGameDAO  extends GameDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-//        if(!games.containsKey(id)){
-//            throw new DataAccessException("bad request");
-//        }
-//        return games.get(id);
     }
 
     public void updateGame(GameData gameData) throws DataAccessException{
@@ -92,7 +77,6 @@ public class MySqlGameDAO  extends GameDAO {
                 preparedStatement.setString(2, black);
                 preparedStatement.setString(3, serializer.toJson(gameData.getGame()));
                 preparedStatement.setInt(4, gameData.getGameID());
-//                preparedStatement.setString(3, gameData.getWhiteUsername());
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -101,7 +85,20 @@ public class MySqlGameDAO  extends GameDAO {
     }
 
     public List<GameData> listGames() throws DataAccessException{
-        return new ArrayList<>(games.values());
+        var games = new ArrayList<GameData>();
+        String statement = "SELECT game_id FROM games";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement(statement)) {
+                ResultSet rs = preparedStatement.executeQuery();
+                while (rs.next()) {
+                    int id = rs.getInt("game_id");
+                    games.add(getGame(id));
+                }
+                return games;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public void clear() throws DataAccessException{

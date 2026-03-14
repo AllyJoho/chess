@@ -12,17 +12,11 @@ import java.sql.SQLException;
 
 public class GameDAOTests {
     MySqlGameDAO dao = new MySqlGameDAO();
-//    UserData user1 = new UserData("name", "password", "email");
-//    UserData user2 = new UserData("bob", "123", "haha");
-//    UserData user3 = new UserData("alice", "abc", "example@email.com");
 
     @Test
     public void createGamePositive() throws DataAccessException {
         dao.clear();
         Assertions.assertDoesNotThrow(() -> dao.createGame("gameName1"));
-
-//        AuthData auth = dao.createAuth("user1");
-//        Assertions.assertEquals("user1", auth.getUsername());
     }
 
     @Test
@@ -30,7 +24,6 @@ public class GameDAOTests {
         dao.clear();
         dao.createGame("gameName1");
         Assertions.assertDoesNotThrow(() -> dao.createGame("gameName1"));
-//        Assertions.assertThrows(RuntimeException.class, () -> dao.createAuth(null));
     }
 
     @Test
@@ -39,15 +32,12 @@ public class GameDAOTests {
         GameData game1 = dao.createGame("gameName1");
         dao.createGame("gameName2");
         Assertions.assertDoesNotThrow(() -> dao.getGame(game1.getGameID()));
-//        AuthData auth = dao.createAuth("user1");
-//        Assertions.assertDoesNotThrow(() -> dao.getSession(auth.getAuthToken()));
     }
 
     @Test
     public void getGameNegative() throws DataAccessException {
         dao.clear();
-//        AuthData session = dao.getSession("hey");
-//        Assertions.assertNull(session);
+        Assertions.assertThrows(DataAccessException.class, () -> dao.getGame(-1));
     }
 
     @Test
