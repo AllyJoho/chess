@@ -12,9 +12,6 @@ import java.sql.SQLException;
 
 public class AuthDAOTests {
     MySqlAuthDAO dao = new MySqlAuthDAO();
-//    UserData user1 = new UserData("name", "password", "email");
-//    UserData user2 = new UserData("bob", "123", "haha");
-//    UserData user3 = new UserData("alice", "abc", "example@email.com");
 
     @Test
     public void createAuthPositive() throws DataAccessException {

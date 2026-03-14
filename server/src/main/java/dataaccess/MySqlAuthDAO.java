@@ -11,7 +11,16 @@ import java.util.UUID;
 public class MySqlAuthDAO extends AuthDAO {
     public MySqlAuthDAO() {
         try {
-            configureDatabase();
+            String[] createStatements = {
+            """
+                CREATE TABLE IF NOT EXISTS  sessions (
+                    token varchar(256) NOT NULL,
+                    username varchar(256) NOT NULL,
+                    PRIMARY KEY (token)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+            };
+            DatabaseManager.configureDatabase(createStatements);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -73,26 +82,4 @@ public class MySqlAuthDAO extends AuthDAO {
         return UUID.randomUUID().toString();
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  sessions (
-              token varchar(256) NOT NULL,
-              username varchar(256) NOT NULL,
-              PRIMARY KEY (token)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

@@ -20,7 +20,19 @@ public class MySqlGameDAO  extends GameDAO {
     public MySqlGameDAO() {
         this.serializer = new Gson();
         try {
-            configureDatabase();
+            String[] createStatements = {
+            """
+                CREATE TABLE IF NOT EXISTS  games (
+                    game_id int NOT NULL AUTO_INCREMENT,
+                    game_name varchar(256) NOT NULL,
+                    white_username varchar(256),
+                    black_username varchar(256),
+                    game_json TEXT,
+                    PRIMARY KEY (game_id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+            };
+            DatabaseManager.configureDatabase(createStatements);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -114,29 +126,4 @@ public class MySqlGameDAO  extends GameDAO {
         return UUID.randomUUID().toString();
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  games (
-              game_id int NOT NULL AUTO_INCREMENT,
-              game_name varchar(256) NOT NULL,
-              white_username varchar(256),
-              black_username varchar(256),
-              game_json TEXT,
-              PRIMARY KEY (game_id)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

@@ -19,6 +19,22 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
+    static public void configureDatabase(String[] createStatements) throws DataAccessException {
+        createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
+
+    /**
+     * Creates the database if it does not already exist.
+     */
     static public void createDatabase() throws DataAccessException {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
