@@ -12,10 +12,7 @@ public class AuthService {
     public boolean authorize(String authToken){
         try {
             AuthData session = authDataAccess.getSession(authToken);
-            if (session == null) {
-                return false;
-            }
-            return true;
+            return session != null;
         } catch (DataAccessException e) {
             return false;
         }

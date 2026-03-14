@@ -1,13 +1,11 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class MySqlAuthDAO extends AuthDAO {
@@ -18,18 +16,6 @@ public class MySqlAuthDAO extends AuthDAO {
             throw new RuntimeException(e);
         }
     }
-
-    final private HashMap<String, AuthData> sessions = new HashMap<>();
-
-//    public void example() throws Exception {
-//        try (Connection conn = DatabaseManager.getConnection()) {
-//            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-//                ResultSet rs = preparedStatement.executeQuery();
-//                rs.next();
-//                System.out.println(rs.getInt(1));
-//            }
-//        }
-//    }
 
     public AuthData createAuth(String username) throws DataAccessException{
         String authToken = generateToken();
@@ -64,10 +50,6 @@ public class MySqlAuthDAO extends AuthDAO {
     }
 
     public void deleteSession(String token) throws DataAccessException{
-//        if(!sessions.containsKey(token)){
-//            throw new DataAccessException("unauthorized");
-//        }
-        sessions.remove(token);
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement preparedStatement = conn.prepareStatement("DELETE FROM sessions WHERE token=?")) {
                 preparedStatement.setString(1, token);

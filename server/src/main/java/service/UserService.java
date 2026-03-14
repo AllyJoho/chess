@@ -40,6 +40,9 @@ public class UserService {
         return new LoginResult(user.getUsername(),auth.getAuthToken());
     }
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
+        if(authDataAccess.getSession(logoutRequest.authToken()) == null){
+            throw new DataAccessException("unauthorized");
+        }
         authDataAccess.deleteSession(logoutRequest.authToken());
     }
     public void clear() throws DataAccessException {
