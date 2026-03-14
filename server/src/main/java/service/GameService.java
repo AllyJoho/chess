@@ -26,6 +26,9 @@ public class GameService {
             throw new DataAccessException("bad request");
         }
         GameData game = gameDataAccess.getGame(request.gameID());
+        if(game == null){
+            throw new DataAccessException("bad request");
+        }
         String whiteName = game.getWhiteUsername();
         String blackName = game.getBlackUsername();
         if(request.playerColor().equals("WHITE")){
