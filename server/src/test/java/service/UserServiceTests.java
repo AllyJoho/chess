@@ -3,8 +3,6 @@ package service;
 import dataaccess.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import request.*;
-import result.*;
 
 class UserServiceTests {
     UserDAO userDataAccess = new MySqlUserDAO();

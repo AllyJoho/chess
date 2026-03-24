@@ -2,8 +2,6 @@ package service;
 
 import dataaccess.*;
 import model.*;
-import request.*;
-import result.*;
 
 public class GameService {
     private final GameDAO gameDataAccess;

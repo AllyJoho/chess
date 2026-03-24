@@ -1,8 +1,6 @@
 package service;
 import dataaccess.*;
 import model.*;
-import request.*;
-import result.*;
 
 public class UserService {
     private final UserDAO userDataAccess;
