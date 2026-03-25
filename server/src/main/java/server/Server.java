@@ -21,9 +21,6 @@ public class Server {
                 .post("/game", handler::createGame)
                 .put("/game", handler::joinGame)
                 .delete("/db", handler::clear);
-
-        // Register your endpoints and exception handlers here.
-
     }
 
     public int run(int desiredPort) {

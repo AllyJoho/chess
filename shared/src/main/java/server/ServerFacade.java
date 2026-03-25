@@ -2,7 +2,6 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-//import model.*;
 import request.*;
 import result.*;
 
@@ -15,6 +14,10 @@ import java.net.http.HttpResponse.BodyHandlers;
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
+
+    public ServerFacade(String url) {
+        serverUrl = url;
+    }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
         HttpRequest httpRequest = buildRequest("POST", "/user", request);
@@ -50,14 +53,9 @@ public class ServerFacade {
         sendRequest(httpRequest);
     }
 
-    public void delete() throws ResponseException {
+    public void clear() throws ResponseException {
         HttpRequest httpRequest = buildRequest("DELETE", "/db", null);
         sendRequest(httpRequest);
-    }
-
-
-    public ServerFacade(String url) {
-        serverUrl = url;
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
