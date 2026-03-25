@@ -2,7 +2,9 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.*;
+//import model.*;
+import request.*;
+import result.*;
 
 import java.net.*;
 import java.net.http.*;
@@ -14,6 +16,44 @@ public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
 
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
+        HttpRequest httpRequest = buildRequest("POST", "/user", request);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, RegisterResult.class);
+    }
+
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        HttpRequest httpRequest = buildRequest("POST", "/session", request);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, LoginResult.class);
+    }
+
+    public void logout(LogoutRequest request) throws ResponseException {
+        HttpRequest httpRequest = buildRequest("DELETE", "/session", request);
+        sendRequest(httpRequest);
+    }
+
+    public ListGameResult listGames() throws ResponseException {
+        HttpRequest httpRequest = buildRequest("GET", "/game", null);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, ListGameResult.class);
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
+        HttpRequest httpRequest = buildRequest("POST", "/game", request);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, CreateGameResult.class);
+    }
+
+    public void joinGame(JoinGameRequest request) throws ResponseException {
+        HttpRequest httpRequest = buildRequest("PUT", "/game", request);
+        sendRequest(httpRequest);
+    }
+
+    public void delete() throws ResponseException {
+        HttpRequest httpRequest = buildRequest("DELETE", "/db", null);
+        sendRequest(httpRequest);
+    }
 
 
     public ServerFacade(String url) {
@@ -21,7 +61,7 @@ public class ServerFacade {
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
-        var request = HttpRequest.newBuilder()
+        HttpRequest.Builder request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
         if (body != null) {
@@ -47,25 +87,21 @@ public class ServerFacade {
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
-        var status = response.statusCode();
+        int status = response.statusCode();
         if (!isSuccessful(status)) {
-            var body = response.body();
+            String body = response.body();
             if (body != null) {
                 throw ResponseException.fromJson(body);
             }
-
             throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
         }
-
         if (responseClass != null) {
             return new Gson().fromJson(response.body(), responseClass);
         }
-
         return null;
     }
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
     }
-
 }

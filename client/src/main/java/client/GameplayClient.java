@@ -1,4 +1,4 @@
 package client;
 
-public class GameplayClient {
+public class GameplayClient extends ChessClient {
 }
