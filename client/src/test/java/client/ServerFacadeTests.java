@@ -34,14 +34,19 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void register() throws Exception {
+    void registerPositive() throws Exception {
         RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
         RegisterResult authData = facade.register(request);
         assertTrue(authData.authToken().length() > 10);
     }
 
     @Test
-    void clear() throws Exception {
+    void clearPositive() throws Exception {
+        Assertions.assertDoesNotThrow(() -> facade.clear());
+    }
+
+    @Test
+    void clearNegative() throws Exception {
         Assertions.assertDoesNotThrow(() -> facade.clear());
     }
 }
