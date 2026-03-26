@@ -27,17 +27,121 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-
     @Test
-    public void sampleTest() {
-        assertTrue(true);
+    void registerPositive() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(request);
+        Assertions.assertTrue(authData.authToken().length() > 10);
     }
 
     @Test
-    void registerPositive() throws Exception {
+    void registerNegative() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(request);
+        RegisterRequest request1 = new RegisterRequest("player1", "password", "p1@email.com");
+        Assertions.assertThrows(Throwable.class, () -> facade.register(request1));
+    }
+
+    @Test
+    void loginPositive() throws Exception {
+        facade.clear();
         RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
         RegisterResult authData = facade.register(request);
-        assertTrue(authData.authToken().length() > 10);
+        LogoutRequest request1 = new LogoutRequest(authData.authToken());
+        facade.logout(request1);
+        LoginRequest request2 = new LoginRequest("player1", "password");
+        Assertions.assertDoesNotThrow(() -> facade.login(request2));
+    }
+
+    @Test
+    void loginNegative() throws Exception {
+        facade.clear();
+        LoginRequest request = new LoginRequest("player1", "password");
+        Assertions.assertThrows(Throwable.class, () -> facade.login(request));
+    }
+
+    @Test
+    void logoutPositive() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(request);
+        LogoutRequest request1 = new LogoutRequest(authData.authToken());
+        Assertions.assertDoesNotThrow(() -> facade.logout(request1));
+    }
+
+    @Test
+    void logoutNegative() throws Exception {
+        facade.clear();
+        LogoutRequest request = new LogoutRequest("authData.authToken()");
+        Assertions.assertDoesNotThrow(() -> facade.logout(null));
+    }
+
+    @Test
+    void listPositive() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(request);
+        CreateGameRequest newGame = new CreateGameRequest("game");
+        facade.createGame(newGame);
+        CreateGameRequest newGame1 = new CreateGameRequest("game1");
+        facade.createGame(newGame1);
+        Assertions.assertEquals(2, facade.listGames().games().size());
+    }
+
+    @Test
+    void listNegative() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(request);
+        Assertions.assertTrue(facade.listGames().games().isEmpty());
+    }
+
+    @Test
+    void createPositive() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(request);
+        CreateGameRequest newGame = new CreateGameRequest("game");
+        Assertions.assertDoesNotThrow(() -> facade.createGame(newGame));
+    }
+
+    @Test
+    void createNegative() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(request);
+        CreateGameRequest newGame = new CreateGameRequest(null);
+        Assertions.assertThrows(Throwable.class, () -> facade.createGame(newGame));
+    }
+
+    @Test
+    void joinPositive() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(request);
+        CreateGameRequest newGame = new CreateGameRequest("game");
+        CreateGameResult result = facade.createGame(newGame);
+        JoinGameRequest request1 = new JoinGameRequest("white", result.gameID(), "player1");
+        Assertions.assertDoesNotThrow(() -> facade.joinGame(request1));
+    }
+
+    @Test
+    void joinNegative() throws Exception {
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(request);
+        CreateGameRequest newGame = new CreateGameRequest("game");
+        CreateGameResult result = facade.createGame(newGame);
+        JoinGameRequest request4 = new JoinGameRequest("white", result.gameID(), "player1");
+        facade.joinGame(request4);
+        LogoutRequest request1 = new LogoutRequest(authData.authToken());
+        facade.logout(request1);
+        RegisterRequest request2 = new RegisterRequest("player2", "password", "p1@email.com");
+        facade.register(request2);
+        JoinGameRequest request3 = new JoinGameRequest("white", result.gameID(), "player2");
+        Assertions.assertDoesNotThrow(() -> facade.joinGame(request3));
     }
 
     @Test
@@ -47,6 +151,12 @@ public class ServerFacadeTests {
 
     @Test
     void clearNegative() throws Exception {
-        Assertions.assertDoesNotThrow(() -> facade.clear());
+        facade.clear();
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(request);
+        CreateGameRequest newGame = new CreateGameRequest("game");
+        facade.createGame(newGame);
+        facade.clear();
+        Assertions.assertThrows(Throwable.class, () -> facade.listGames());
     }
 }

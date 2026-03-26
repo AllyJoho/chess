@@ -25,8 +25,17 @@ public class ResponseException extends Exception {
 
     public static ResponseException fromJson(String json) {
         var map = new Gson().fromJson(json, HashMap.class);
-        var status = Code.valueOf(map.get("status").toString());
+        var status = fromHttpStatusCode(500);
         String message = map.get("message").toString();
+        if (message.contains("bad request")) {
+            status = fromHttpStatusCode(400);
+        } else if (message.contains("unauthorized")) {
+            status = fromHttpStatusCode(401);
+        } else if (message.contains("already taken")) {
+            status = fromHttpStatusCode(403);
+        } else {
+            status = fromHttpStatusCode(500);
+        }
         return new ResponseException(status, message);
     }
 

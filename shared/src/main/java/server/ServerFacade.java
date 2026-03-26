@@ -1,7 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import exception.ResponseException;
+//import exception.ResponseException;
 import request.*;
 import result.*;
 
@@ -10,58 +10,74 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.HashMap;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
+    private String authToken = null;
+
 
     public ServerFacade(String url) {
         serverUrl = url;
     }
 
-    public RegisterResult register(RegisterRequest request) throws ResponseException {
+    public RegisterResult register(RegisterRequest request) throws Exception {
         HttpRequest httpRequest = buildRequest("POST", "/user", request);
         HttpResponse<String> response = sendRequest(httpRequest);
-        return handleResponse(response, RegisterResult.class);
+        RegisterResult result = handleResponse(response, RegisterResult.class);
+        if (result != null) {
+            this.authToken = result.authToken();
+        }
+        return result;
     }
 
-    public LoginResult login(LoginRequest request) throws ResponseException {
+    public LoginResult login(LoginRequest request) throws Exception {
         HttpRequest httpRequest = buildRequest("POST", "/session", request);
         HttpResponse<String> response = sendRequest(httpRequest);
-        return handleResponse(response, LoginResult.class);
+        LoginResult result = handleResponse(response, LoginResult.class);
+        if (result != null) {
+            this.authToken = result.authToken();
+        }
+        return result;
     }
 
-    public void logout(LogoutRequest request) throws ResponseException {
+    public void logout(LogoutRequest request) throws Exception {
         HttpRequest httpRequest = buildRequest("DELETE", "/session", request);
         sendRequest(httpRequest);
+        this.authToken = null;
     }
 
-    public ListGameResult listGames() throws ResponseException {
+    public ListGameResult listGames() throws Exception {
         HttpRequest httpRequest = buildRequest("GET", "/game", null);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, ListGameResult.class);
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
+    public CreateGameResult createGame(CreateGameRequest request) throws Exception {
         HttpRequest httpRequest = buildRequest("POST", "/game", request);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, CreateGameResult.class);
     }
 
-    public void joinGame(JoinGameRequest request) throws ResponseException {
+    public void joinGame(JoinGameRequest request) throws Exception {
         HttpRequest httpRequest = buildRequest("PUT", "/game", request);
         sendRequest(httpRequest);
     }
 
-    public void clear() throws ResponseException {
+    public void clear() throws Exception {
         HttpRequest httpRequest = buildRequest("DELETE", "/db", null);
         sendRequest(httpRequest);
+        authToken = null;
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
+        if (authToken != null) {
+            request.setHeader("Authorization", authToken);
+        }
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
         }
@@ -76,22 +92,22 @@ public class ServerFacade {
         }
     }
 
-    private HttpResponse<String> sendRequest(HttpRequest request) throws ResponseException {
+    private HttpResponse<String> sendRequest(HttpRequest request) throws Exception {
         try {
             return client.send(request, BodyHandlers.ofString());
         } catch (Exception ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
     }
 
-    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
+    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws Exception {
         int status = response.statusCode();
         if (!isSuccessful(status)) {
             String body = response.body();
             if (body != null) {
-                throw ResponseException.fromJson(body);
+                throw new Exception();
             }
-            throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
+            throw new Exception("other failure");
         }
         if (responseClass != null) {
             return new Gson().fromJson(response.body(), responseClass);

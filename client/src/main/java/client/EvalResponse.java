@@ -1,4 +1,4 @@
 package client;
 
-public record EvalResponse() {
+public record EvalResponse(String message, int status, String authToken, int gameId) {
 }

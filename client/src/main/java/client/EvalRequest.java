@@ -1,4 +1,4 @@
 package client;
 
-public record EvalRequest() {
+public record EvalRequest(String line, String authToken, int gameId) {
 }
