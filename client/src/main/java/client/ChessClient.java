@@ -5,7 +5,7 @@ import server.ServerFacade;
 import java.util.Arrays;
 
 public class ChessClient {
-    private final ServerFacade server;
+    public final ServerFacade server;
     public ChessClient(ServerFacade server){
         this.server = server;
     }

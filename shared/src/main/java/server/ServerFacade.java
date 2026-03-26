@@ -105,7 +105,10 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             String body = response.body();
             if (body != null) {
-                throw new Exception();
+                HashMap map = new Gson().fromJson(body, HashMap.class);
+//                String status = map.get("status").toString();
+                String message = map.get("message").toString();
+                throw new Exception("Error: " + status + ": " + message);
             }
             throw new Exception("other failure");
         }

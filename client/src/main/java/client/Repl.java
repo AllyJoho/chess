@@ -54,12 +54,12 @@ public class Repl {
         try {
             EvalRequest request = new EvalRequest(line, authToken, gameId);
             EvalResponse response = client.eval(request);
-            printMessage(response.message(), "");
+            printMessage(response.message() + "\n", "");
             setState(response.status());
             return response;
         } catch (Throwable e) {
             String result = e.toString();
-            printMessage(result, "");
+            printMessage(result + "\n", "");
         }
         return null;
     }
