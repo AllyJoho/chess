@@ -25,22 +25,34 @@ public class PreLoginClient extends ChessClient {
                 default -> help(request);
             };
         } catch (Exception ex) {
-            System.out.println(ex.toString());
             return new EvalResponse(ex.getMessage(), 0, request.authToken(), request.gameId());
         }
     }
 
     private EvalResponse register(EvalRequest request, String[] params) throws Exception {
+        server.clear();
         String message =  "You created an account.";
-        RegisterRequest request1 = new RegisterRequest(params[0], params[1], params[2]);
-        RegisterResult result = server.register(request1);
+        RegisterResult result;
+        if(params.length == 3){
+            RegisterRequest request1 = new RegisterRequest(params[0], params[1], params[2]);
+            result = server.register(request1);
+        }else{
+            throw new Exception("Incorrect arguments. Please format your register request like this: \n" +
+                    "register <USERNAME> <PASSWORD> <EMAIL>");
+        }
         return new EvalResponse(message, 1, result.authToken(), request.gameId());
     }
 
     private EvalResponse login(EvalRequest request, String[] params) throws Exception {
         String message =  "You've successfully logged in " + params[0];
-        LoginRequest request1 = new LoginRequest(params[0], params[1]);
-        LoginResult result = server.login(request1);
+        LoginResult result;
+        if(params.length == 2){
+            LoginRequest request1 = new LoginRequest(params[0], params[1]);
+            result = server.login(request1);
+        }else{
+            throw new Exception("Incorrect arguments. Please format your login request like this: \n" +
+                    "login <USERNAME> <PASSWORD>");
+        }
         return new EvalResponse(message, 1, result.authToken(), request.gameId());
     }
 
@@ -50,8 +62,11 @@ public class PreLoginClient extends ChessClient {
     }
 
     private EvalResponse help(EvalRequest request){
-        String message =  "help - get commands \nquit - say goodbye \nregister <USERNAME> " +
-                "<PASSWORD> <EMAIL> - make an account\nlogin <USERNAME> <PASSWORD> - play chess";
+        String message = """
+                help - get commands
+                quit - say goodbye
+                register <USERNAME> <PASSWORD> <EMAIL> - make an account
+                login <USERNAME> <PASSWORD> - play chess""";
         return new EvalResponse(message, 0, request.authToken(), request.gameId());
     }
 }

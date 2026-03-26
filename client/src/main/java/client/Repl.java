@@ -11,7 +11,6 @@ import static ui.EscapeSequences.*;
 import static client.PrintFunctions.printMessage;
 
 public class Repl {
-    private final ServerFacade server;
     private final ChessClient preLoginClient;
     private final ChessClient postLoginClient;
     private final ChessClient gameplayClient;
@@ -19,15 +18,16 @@ public class Repl {
     private int state;
 
     public Repl(String serverUrl) {
-        this.server = new ServerFacade(serverUrl);
-        this.preLoginClient = new PreLoginClient(this.server);
-        this.postLoginClient = new PreLoginClient(this.server);
-        this.gameplayClient = new GameplayClient(this.server);
+        ServerFacade server = new ServerFacade(serverUrl);
+        this.preLoginClient = new PreLoginClient(server);
+        this.postLoginClient = new PostLoginClient(server);
+        this.gameplayClient = new GameplayClient(server);
         this.client = this.preLoginClient;
         this.state = 0;
     }
 
     public void run(){
+        printMessage(ERASE_SCREEN, "");
         printMessage("Welcome to 240 chess. Type help to get started.\n", SET_TEXT_ITALIC);
         Scanner scanner = new Scanner(System.in);
         String authToken = "";
@@ -74,6 +74,3 @@ public class Repl {
         };
     }
 }
-//asks for user input and manages state
-//passes input to client
-//get auth token back
