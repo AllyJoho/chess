@@ -23,7 +23,7 @@ public class ServerFacade {
     }
 
     public RegisterResult register(RegisterRequest request) throws Exception {
-        HttpRequest httpRequest = buildRequest("POST", "/user", request);
+        HttpRequest httpRequest = buildRequest("POST", "/user", request, null);
         HttpResponse<String> response = sendRequest(httpRequest);
         RegisterResult result = handleResponse(response, RegisterResult.class);
         if (result != null) {
@@ -33,7 +33,7 @@ public class ServerFacade {
     }
 
     public LoginResult login(LoginRequest request) throws Exception {
-        HttpRequest httpRequest = buildRequest("POST", "/session", request);
+        HttpRequest httpRequest = buildRequest("POST", "/session", request, null);
         HttpResponse<String> response = sendRequest(httpRequest);
         LoginResult result = handleResponse(response, LoginResult.class);
         if (result != null) {
@@ -42,36 +42,36 @@ public class ServerFacade {
         return result;
     }
 
-    public void logout(LogoutRequest request) throws Exception {
-        HttpRequest httpRequest = buildRequest("DELETE", "/session", request);
+    public void logout(LogoutRequest request, String authToken) throws Exception {
+        HttpRequest httpRequest = buildRequest("DELETE", "/session", request, authToken);
         sendRequest(httpRequest);
         this.authToken = null;
     }
 
-    public ListGameResult listGames() throws Exception {
-        HttpRequest httpRequest = buildRequest("GET", "/game", null);
+    public ListGameResult listGames(String authToken) throws Exception {
+        HttpRequest httpRequest = buildRequest("GET", "/game", null, authToken);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, ListGameResult.class);
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) throws Exception {
-        HttpRequest httpRequest = buildRequest("POST", "/game", request);
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws Exception {
+        HttpRequest httpRequest = buildRequest("POST", "/game", request, authToken);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, CreateGameResult.class);
     }
 
-    public void joinGame(JoinGameRequest request) throws Exception {
-        HttpRequest httpRequest = buildRequest("PUT", "/game", request);
+    public void joinGame(JoinGameRequest request, String authToken) throws Exception {
+        HttpRequest httpRequest = buildRequest("PUT", "/game", request, authToken);
         sendRequest(httpRequest);
     }
 
     public void clear() throws Exception {
-        HttpRequest httpRequest = buildRequest("DELETE", "/db", null);
+        HttpRequest httpRequest = buildRequest("DELETE", "/db", null, null);
         sendRequest(httpRequest);
         authToken = null;
     }
 
-    private HttpRequest buildRequest(String method, String path, Object body) {
+    private HttpRequest buildRequest(String method, String path, Object body, String authToken) {
         HttpRequest.Builder request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
@@ -106,7 +106,6 @@ public class ServerFacade {
             String body = response.body();
             if (body != null) {
                 HashMap map = new Gson().fromJson(body, HashMap.class);
-//                String status = map.get("status").toString();
                 String message = map.get("message").toString();
                 throw new Exception("Error: " + status + ": " + message);
             }

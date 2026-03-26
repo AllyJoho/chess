@@ -1,13 +1,8 @@
 package client;
 
 import server.ServerFacade;
-
 import java.util.Scanner;
-
-import static client.PrintFunctions.printBoard;
 import static ui.EscapeSequences.*;
-//import client.PrintFunctions;
-
 import static client.PrintFunctions.printMessage;
 
 public class Repl {
@@ -49,7 +44,7 @@ public class Repl {
             case 2 -> "[IN GAME]";
             default -> null;
         };
-        printMessage(stage + ">>>", "");
+        printMessage(stage + ">>> ", "");
         String line = scanner.nextLine();
         try {
             EvalRequest request = new EvalRequest(line, authToken, gameId);

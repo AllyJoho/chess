@@ -26,6 +26,7 @@ public class PostLoginClient extends ChessClient {
                 case "observe" -> observe(request, params);
                 case "logout" -> logout();
                 case "quit" -> quit();
+                case "secret" -> secret(request, params);
                 default -> help(request);
             };
         } catch (Exception ex) {
@@ -41,7 +42,7 @@ public class PostLoginClient extends ChessClient {
     }
 
     private EvalResponse list(EvalRequest request) throws Exception {
-        ListGameResult result = server.listGames();
+        ListGameResult result = server.listGames(request.authToken());
         return new EvalResponse(result.toString(), 1, request.authToken(), request.gameId());
     }
 
