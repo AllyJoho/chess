@@ -25,19 +25,22 @@ public class Repl {
         printMessage(ERASE_SCREEN, "");
         printMessage("Welcome to 240 chess. Type help to get started.\n", SET_TEXT_ITALIC);
         Scanner scanner = new Scanner(System.in);
+
         String authToken = "";
         int gameId = -1;
+        String username = "";
         while (state != 3){
-            EvalResponse response = getInput(scanner, authToken, gameId);
+            EvalResponse response = getInput(scanner, authToken, gameId, username);
             if(response == null){
                 continue;
             }
             authToken = response.authToken();
             gameId = response.gameId();
+            username = response.authToken();
         }
     }
 
-    private EvalResponse getInput(Scanner scanner, String authToken, int gameId){
+    private EvalResponse getInput(Scanner scanner, String authToken, int gameId, String username){
         String stage = switch (state) {
             case 0 -> "[LOGGED OUT]";
             case 1 -> "[LOGGED IN]";
@@ -47,7 +50,7 @@ public class Repl {
         printMessage(stage + ">>> ", "");
         String line = scanner.nextLine();
         try {
-            EvalRequest request = new EvalRequest(line, authToken, gameId);
+            EvalRequest request = new EvalRequest(line, authToken, gameId, username);
             EvalResponse response = client.eval(request);
             printMessage(response.message() + "\n", "");
             setState(response.status());

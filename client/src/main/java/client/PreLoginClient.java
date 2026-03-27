@@ -22,11 +22,11 @@ public class PreLoginClient extends ChessClient {
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "quit" -> quit();
-                case "secret" -> secret(request, params);
+                case "secret" -> secret(request, params, 0);
                 default -> help();
             };
         } catch (Exception ex) {
-            return new EvalResponse(ex.getMessage(), 0, request.authToken(), request.gameId());
+            return new EvalResponse(ex.getMessage(), 0, request.authToken(), request.gameId(), request.user());
         }
     }
 
@@ -41,7 +41,7 @@ public class PreLoginClient extends ChessClient {
             throw new Exception("Incorrect arguments. Please format your register request like this: \n" +
                     "register <USERNAME> <PASSWORD> <EMAIL>");
         }
-        return new EvalResponse(message, 1, result.authToken(), -1);
+        return new EvalResponse(message, 1, result.authToken(), -1, result.username());
     }
 
     private EvalResponse login(String[] params) throws Exception {
@@ -54,12 +54,12 @@ public class PreLoginClient extends ChessClient {
             throw new Exception("Incorrect arguments. Please format your login request like this: \n" +
                     "login <USERNAME> <PASSWORD>");
         }
-        return new EvalResponse(message, 1, result.authToken(), -1);
+        return new EvalResponse(message, 1, result.authToken(), -1, result.username());
     }
 
     private EvalResponse quit(){
         String message =  "Goodbye!";
-        return new EvalResponse(message, 3, "", -1);
+        return new EvalResponse(message, 3, "", -1, "");
     }
 
     private EvalResponse help(){
@@ -68,6 +68,6 @@ public class PreLoginClient extends ChessClient {
                 login <USERNAME> <PASSWORD> - play chess
                 quit - say goodbye
                 help - get commands""";
-        return new EvalResponse(message, 0, "", -1);
+        return new EvalResponse(message, 0, "", -1, "");
     }
 }
