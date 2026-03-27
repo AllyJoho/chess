@@ -26,6 +26,7 @@ public class Repl {
         printMessage("Welcome to 240 chess. Type help to get started.\n", SET_TEXT_ITALIC);
         Scanner scanner = new Scanner(System.in);
 
+        ClientData data = new ClientData();
         String authToken = "";
         int gameId = -1;
         String username = "";

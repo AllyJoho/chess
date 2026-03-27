@@ -21,7 +21,7 @@ public class ChessClient {
             message = "clear";
         }else if (params[0].equals("auth")) {
             message = request.authToken();
-        } else if (params[0].equals("auth")) {
+        } else if (params[0].equals("name")) {
             message = request.user();
         }
         return new EvalResponse(message, status, request.authToken(), request.gameId(), request.user());
