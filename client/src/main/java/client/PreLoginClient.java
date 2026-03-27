@@ -14,8 +14,9 @@ public class PreLoginClient extends ChessClient {
     }
 
     public EvalResponse eval(EvalRequest request){
+        data = request.data();
         try {
-            String[] tokens = request.line().toLowerCase().split(" ");
+            String[] tokens = request.command().toLowerCase().split(" ");
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
@@ -26,7 +27,7 @@ public class PreLoginClient extends ChessClient {
                 default -> help();
             };
         } catch (Exception ex) {
-            return new EvalResponse(ex.getMessage(), 0, request.authToken(), request.gameId(), request.user());
+            return new EvalResponse(ex.getMessage(), 0, request.data());
         }
     }
 
@@ -41,7 +42,9 @@ public class PreLoginClient extends ChessClient {
             throw new Exception("Incorrect arguments. Please format your register request like this: \n" +
                     "register <USERNAME> <PASSWORD> <EMAIL>");
         }
-        return new EvalResponse(message, 1, result.authToken(), -1, result.username());
+        data.setUsername(result.username());
+        data.setAuthToken(result.authToken());
+        return new EvalResponse(message, 1, data);
     }
 
     private EvalResponse login(String[] params) throws Exception {
@@ -54,12 +57,14 @@ public class PreLoginClient extends ChessClient {
             throw new Exception("Incorrect arguments. Please format your login request like this: \n" +
                     "login <USERNAME> <PASSWORD>");
         }
-        return new EvalResponse(message, 1, result.authToken(), -1, result.username());
+        data.setAuthToken(result.username());
+        data.setAuthToken(result.authToken());
+        return new EvalResponse(message, 1, data);
     }
 
     private EvalResponse quit(){
         String message =  "Goodbye!";
-        return new EvalResponse(message, 3, "", -1, "");
+        return new EvalResponse(message, 3, data);
     }
 
     private EvalResponse help(){
@@ -68,6 +73,6 @@ public class PreLoginClient extends ChessClient {
                 login <USERNAME> <PASSWORD> - play chess
                 quit - say goodbye
                 help - get commands""";
-        return new EvalResponse(message, 0, "", -1, "");
+        return new EvalResponse(message, 0, data);
     }
 }

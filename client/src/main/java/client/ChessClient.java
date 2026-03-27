@@ -6,12 +6,14 @@ import java.util.Arrays;
 
 public class ChessClient {
     protected final ServerFacade server;
+    protected ClientData data;
+
     public ChessClient(ServerFacade server){
         this.server = server;
     }
 
     public EvalResponse eval(EvalRequest request){
-        return new EvalResponse("", 0, request.authToken(), request.gameId(), request.user());
+        return new EvalResponse("", 0, request.data());
     }
 
     protected EvalResponse secret(EvalRequest request, String[] params, int status) throws Exception {
@@ -20,10 +22,10 @@ public class ChessClient {
             server.clear();
             message = "clear";
         }else if (params[0].equals("auth")) {
-            message = request.authToken();
+            message = request.data().getAuthToken();
         } else if (params[0].equals("name")) {
-            message = request.user();
+            message = request.data().getUsername();
         }
-        return new EvalResponse(message, status, request.authToken(), request.gameId(), request.user());
+        return new EvalResponse(message, status, request.data());
     }
 }

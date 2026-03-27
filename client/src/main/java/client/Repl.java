@@ -27,21 +27,16 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
 
         ClientData data = new ClientData();
-        String authToken = "";
-        int gameId = -1;
-        String username = "";
         while (state != 3){
-            EvalResponse response = getInput(scanner, authToken, gameId, username);
+            EvalResponse response = getInput(scanner, data);
             if(response == null){
                 continue;
             }
-            authToken = response.authToken();
-            gameId = response.gameId();
-            username = response.authToken();
+            data = response.data();
         }
     }
 
-    private EvalResponse getInput(Scanner scanner, String authToken, int gameId, String username){
+    private EvalResponse getInput(Scanner scanner, ClientData data){
         String stage = switch (state) {
             case 0 -> "[LOGGED OUT]";
             case 1 -> "[LOGGED IN]";
@@ -51,7 +46,7 @@ public class Repl {
         printMessage(stage + ">>> ", "");
         String line = scanner.nextLine();
         try {
-            EvalRequest request = new EvalRequest(line, authToken, gameId, username);
+            EvalRequest request = new EvalRequest(line, data);
             EvalResponse response = client.eval(request);
             printMessage(response.message() + "\n", "");
             setState(response.status());

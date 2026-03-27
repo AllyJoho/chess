@@ -1,14 +1,8 @@
 package client;
 
 import model.GameData;
-import request.CreateGameRequest;
-import request.JoinGameRequest;
-import request.LoginRequest;
-import request.RegisterRequest;
-import result.CreateGameResult;
-import result.ListGameResult;
-import result.LoginResult;
-import result.RegisterResult;
+import request.*;
+import result.*;
 import server.ServerFacade;
 
 import java.util.ArrayList;
@@ -18,72 +12,75 @@ public class PostLoginClient extends ChessClient {
     ArrayList<GameData> gamesLink;
     public PostLoginClient(ServerFacade server) {
         super(server);
-        gamesLink = new ArrayList<GameData>();
+        gamesLink = new ArrayList<>();
     }
 
     public EvalResponse eval(EvalRequest request){
+        data = request.data();
         try {
-            String[] tokens = request.line().toLowerCase().split(" ");
+            String[] tokens = request.command().toLowerCase().split(" ");
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "create" -> create(request, params);
-                case "list" -> list(request);
-                case "join" -> join(request, params);
-                case "observe" -> observe(request, params);
+                case "create" -> create(params);
+                case "list" -> list();
+                case "join" -> join(params);
+                case "observe" -> observe(params);
                 case "logout" -> logout();
                 case "quit" -> quit();
                 case "secret" -> secret(request, params, 1);
-                default -> help(request);
+                default -> help();
             };
         } catch (Exception ex) {
-            return new EvalResponse(ex.getMessage(), 0, request.authToken(), request.gameId(), request.user());
+            return new EvalResponse(ex.getMessage(), 1, data);
         }
     }
 
-    private EvalResponse create(EvalRequest request, String[] params) throws Exception {
+    private EvalResponse create(String[] params) throws Exception {
         String message =  "You've successfully created a game called " + params[0];
-        CreateGameResult result;
         if(params.length == 1){
-            CreateGameRequest request1 = new CreateGameRequest(params[0]);
-            result = server.createGame(request1, request.authToken());
+            CreateGameRequest request = new CreateGameRequest(params[0]);
+            server.createGame(request, data.getAuthToken());
         }else{
             throw new Exception("Incorrect arguments. Please format your create game request like this: \n" +
                     "create <NAME>");
         }
-        return new EvalResponse(message, 1, request.authToken(), request.gameId(), request.user());
+        return new EvalResponse(message, 1, data);
     }
 
-    private EvalResponse list(EvalRequest request) throws Exception {
-        ListGameResult result = server.listGames(request.authToken());
+    private EvalResponse list() throws Exception {
+        ListGameResult result = server.listGames(data.getAuthToken());
         StringBuilder resultString = new StringBuilder();
         for (int i = 0; i < result.games().size(); i++) {
             GameData gameData = result.games().get(i);
             String gameString = (i+1) + " - " + gameData.getGameName() + " WHITE: " +
-                    gameData.getWhiteUsername() + "BLACK: " + gameData.getBlackUsername();
+                    gameData.getWhiteUsername() + " BLACK: " + gameData.getBlackUsername();
             gamesLink.add(gameData);
             resultString.append(gameString);
         }
-        return new EvalResponse(resultString.toString(), 1, request.authToken(), request.gameId(), request.user());
+        return new EvalResponse(resultString.toString(), 1, data);
     }
 
-    private EvalResponse join(EvalRequest request, String[] params) throws Exception {
+    private EvalResponse join(String[] params) throws Exception {
         String message =  "You've successfully joined game " + params[0];
         if(params.length == 2){
-            JoinGameRequest request1 = new JoinGameRequest(params[0], Integer.parseInt(params[1]), request.user());
-            server.joinGame(request1, request.authToken());
+            JoinGameRequest request = new JoinGameRequest(params[0], Integer.parseInt(params[1]), data.getUsername());
+            server.joinGame(request, data.getAuthToken());
+            GameData gameData = gamesLink.get(Integer.parseInt(params[1]) - 1);
+            data.setGameId(gameData.getGameID());
         }else{
             throw new Exception("Incorrect arguments. Please format your join request like this: \n" +
                     "join <ID> [WHITE | BLACK]");
         }
-        return new EvalResponse(message, 2, request.authToken(), request.gameId(), request.user());
+        return new EvalResponse(message, 2, data);
     }
 
-    private EvalResponse observe(EvalRequest request, String[] params) throws Exception {
+    private EvalResponse observe(String[] params) throws Exception {
         String message =  "You're observing game " + params[0];
         if(params.length == 1){
             GameData gameData = gamesLink.get(Integer.parseInt(params[0]) - 1);
-            return new EvalResponse(message, 2, request.authToken(), request.gameId(), request.user());
+            data.setGameId(gameData.getGameID());
+            return new EvalResponse(message, 2, data);
         }else{
             throw new Exception("Incorrect arguments. Please format your create game request like this: \n" +
                     "create <NAME>");
@@ -92,15 +89,17 @@ public class PostLoginClient extends ChessClient {
 
     private EvalResponse logout(){
         String message =  "Goodbye!";
-        return new EvalResponse(message, 0, "", -1, "");
+        data.setUsername("");
+        data.setAuthToken("");
+        return new EvalResponse(message, 0, data);
     }
 
     private EvalResponse quit(){
         String message =  "Goodbye!";
-        return new EvalResponse(message, 3, "", -1, "");
+        return new EvalResponse(message, 3, data);
     }
 
-    private EvalResponse help(EvalRequest request){
+    private EvalResponse help(){
         String message = """
                 create <NAME> - make a new game
                 list - list all the games
@@ -109,6 +108,6 @@ public class PostLoginClient extends ChessClient {
                 logout - when you are done
                 quit - say goodbye
                 help - get commands""";
-        return new EvalResponse(message, 1, request.authToken(), request.gameId(), request.user());
+        return new EvalResponse(message, 1, data);
     }
 }
