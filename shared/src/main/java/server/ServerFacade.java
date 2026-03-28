@@ -1,7 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-//import exception.ResponseException;
 import request.*;
 import result.*;
 
@@ -107,7 +106,8 @@ public class ServerFacade {
             if (body != null) {
                 HashMap map = new Gson().fromJson(body, HashMap.class);
                 String message = map.get("message").toString();
-                throw new Exception("Error: " + status + ": " + message);
+//                throw new Exception("Error: " + status + ": " + message);
+                throw new Exception(message);
             }
             throw new Exception("other failure");
         }

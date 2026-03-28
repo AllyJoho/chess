@@ -54,7 +54,7 @@ public class PostLoginClient extends ChessClient {
         for (int i = 0; i < result.games().size(); i++) {
             GameData gameData = result.games().get(i);
             String gameString = (i+1) + " - " + gameData.getGameName() + " WHITE: " +
-                    gameData.getWhiteUsername() + " BLACK: " + gameData.getBlackUsername();
+                    gameData.getWhiteUsername() + " BLACK: " + gameData.getBlackUsername() + "\n";
             gamesLink.add(gameData);
             resultString.append(gameString);
         }
@@ -64,10 +64,16 @@ public class PostLoginClient extends ChessClient {
     private EvalResponse join(String[] params) throws Exception {
         String message =  "You've successfully joined game " + params[0];
         if(params.length == 2){
-            JoinGameRequest request = new JoinGameRequest(params[0], Integer.parseInt(params[1]), data.getUsername());
+            String color = params[1].toUpperCase();
+            JoinGameRequest request = new JoinGameRequest(color, intFromStr(params[0]), data.getUsername());
             server.joinGame(request, data.getAuthToken());
-            GameData gameData = gamesLink.get(Integer.parseInt(params[1]) - 1);
-            data.setGameId(gameData.getGameID());
+            GameData gameData = getGame(intFromStr(params[0]));
+            data.setGameData(gameData);
+            if(color.equals("WHITE")){
+                data.setGamePerspective(1);
+            }else{
+                data.setGamePerspective(2);
+            }
         }else{
             throw new Exception("Incorrect arguments. Please format your join request like this: \n" +
                     "join <ID> [WHITE | BLACK]");
@@ -78,8 +84,9 @@ public class PostLoginClient extends ChessClient {
     private EvalResponse observe(String[] params) throws Exception {
         String message =  "You're observing game " + params[0];
         if(params.length == 1){
-            GameData gameData = gamesLink.get(Integer.parseInt(params[0]) - 1);
-            data.setGameId(gameData.getGameID());
+            GameData gameData = getGame(intFromStr(params[0]));
+            data.setGameData(gameData);
+            data.setGamePerspective(3);
             return new EvalResponse(message, 2, data);
         }else{
             throw new Exception("Incorrect arguments. Please format your create game request like this: \n" +
@@ -87,8 +94,10 @@ public class PostLoginClient extends ChessClient {
         }
     }
 
-    private EvalResponse logout(){
+    private EvalResponse logout() throws Exception {
         String message =  "Goodbye!";
+        LogoutRequest request = new LogoutRequest(data.getAuthToken());
+        server.logout(request, data.getAuthToken());
         data.setUsername("");
         data.setAuthToken("");
         return new EvalResponse(message, 0, data);
@@ -109,5 +118,12 @@ public class PostLoginClient extends ChessClient {
                 quit - say goodbye
                 help - get commands""";
         return new EvalResponse(message, 1, data);
+    }
+
+    private GameData getGame(int game) throws Exception {
+        if (game > gamesLink.size()){
+            throw new Exception("We don't know what game you're referencing. List the games and pick one of those.");
+        }
+        return gamesLink.get(game - 1);
     }
 }

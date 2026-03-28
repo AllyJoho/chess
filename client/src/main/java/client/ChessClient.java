@@ -2,8 +2,6 @@ package client;
 
 import server.ServerFacade;
 
-import java.util.Arrays;
-
 public class ChessClient {
     protected final ServerFacade server;
     protected ClientData data;
@@ -14,6 +12,16 @@ public class ChessClient {
 
     public EvalResponse eval(EvalRequest request){
         return new EvalResponse("", 0, request.data());
+    }
+
+    public ClientData displayBoard(ClientData data) {return null;}
+
+    protected int intFromStr(String str) throws Exception {
+        try {
+            return Integer.parseInt(str);
+        } catch (Exception e){
+            throw new Exception("Please put an integer in the correct feild");
+        }
     }
 
     protected EvalResponse secret(EvalRequest request, String[] params, int status) throws Exception {

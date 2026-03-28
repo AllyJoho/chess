@@ -8,11 +8,12 @@ import chess.move.*;
 import static ui.EscapeSequences.*;
 
 public class PrintFunctions {
-    public static void printBoard(){
-        System.out.println("this is a chess board");
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        printChess(board, "W");
+    public static void printBoard(ChessBoard board, int perspective){
+        if(perspective == 1 || perspective == 3){
+            printChess(board, "W");
+        }else{
+            printChess(board,"B");
+        }
     }
 
     public static void printMessage(String message, String textSettings){

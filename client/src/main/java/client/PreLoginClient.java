@@ -32,7 +32,6 @@ public class PreLoginClient extends ChessClient {
     }
 
     private EvalResponse register(String[] params) throws Exception {
-        server.clear();
         String message =  "You created an account.";
         RegisterResult result;
         if(params.length == 3){

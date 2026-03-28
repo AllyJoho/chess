@@ -1,14 +1,16 @@
 package client;
 
+import model.GameData;
+
 public class ClientData {
     private String username;
     private String authToken;
-    private int gameId;
+    private GameData gameData;
     private int gamePerspective;
     public ClientData(){
         username = "";
         authToken = "";
-        gameId = -1;
+        gameData = null;
         gamePerspective = 0;
     }
 
@@ -18,14 +20,6 @@ public class ClientData {
 
     public void setGamePerspective(int gamePerspective) {
         this.gamePerspective = gamePerspective;
-    }
-
-    public int getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(int gameId) {
-        this.gameId = gameId;
     }
 
     public String getAuthToken() {
@@ -42,5 +36,13 @@ public class ClientData {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public GameData getGameData() {
+        return gameData;
+    }
+
+    public void setGameData(GameData gameData) {
+        this.gameData = gameData;
     }
 }
