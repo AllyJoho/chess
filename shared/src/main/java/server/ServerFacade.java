@@ -61,7 +61,8 @@ public class ServerFacade {
 
     public void joinGame(JoinGameRequest request, String authToken) throws Exception {
         HttpRequest httpRequest = buildRequest("PUT", "/game", request, authToken);
-        sendRequest(httpRequest);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        handleResponse(response, String.class);
     }
 
     public void clear() throws Exception {

@@ -29,17 +29,21 @@ public class PrintFunctions {
         int stop = direction ? -1 : 8;
         int step = direction ? -1 : 1;
 
-        printLetterRow(infoSettings);
+        int startj = direction ? 0 : 7;
+        int stopj = direction ? 8 : -1;
+        int stepj = direction ? 1 : -1;
+
+        printLetterRow(infoSettings, step);
         for (int i = start; i != stop; i += step) {
             printMessage(" " + (i + 1) + " ", infoSettings);
-            for (int j = 0; j < 8; j++) {
+            for (int j = startj; j != stopj; j += stepj) {
                 ChessPosition pos = new ChessPosition(i+1,j+1);
                 ChessPiece piece = board.getPiece(pos);
                 printPiece(piece, pos);
             }
             printMessage(" " + (i + 1) + " " + RESET_BG_COLOR + "\n", infoSettings);
         }
-        printLetterRow(infoSettings);
+        printLetterRow(infoSettings, step);
     }
 
     private static void printPiece(ChessPiece piece, ChessPosition pos){
@@ -60,12 +64,12 @@ public class PrintFunctions {
         printMessage(pieceChar, color);
     }
 
-    private static void printLetterRow(String infoSettings){
+    private static void printLetterRow(String infoSettings, int step){
         printMessage(EMPTY, infoSettings);
-        char col = 'a';
+        char col = step > 0 ? 'a' : 'h';
         for (int i = 0; i < 8; i++) {
             printMessage(" " + col + " ", infoSettings);
-            col++;
+            col += step;
         }
         printMessage(EMPTY + RESET_BG_COLOR + "\n", infoSettings);
 
