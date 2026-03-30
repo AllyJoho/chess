@@ -120,7 +120,7 @@ public class ServerFacadeTests {
         RegisterResult authData = facade.register(request);
         CreateGameRequest newGame = new CreateGameRequest("game");
         CreateGameResult result = facade.createGame(newGame, authData.authToken());
-        JoinGameRequest request1 = new JoinGameRequest("white", result.gameID(), "player1");
+        JoinGameRequest request1 = new JoinGameRequest("WHITE", result.gameID(), "player1");
         Assertions.assertDoesNotThrow(() -> facade.joinGame(request1, authData.authToken()));
     }
 
@@ -131,14 +131,14 @@ public class ServerFacadeTests {
         RegisterResult authData = facade.register(request);
         CreateGameRequest newGame = new CreateGameRequest("game");
         CreateGameResult result = facade.createGame(newGame, authData.authToken());
-        JoinGameRequest request4 = new JoinGameRequest("white", result.gameID(), "player1");
+        JoinGameRequest request4 = new JoinGameRequest("WHITE", result.gameID(), "player1");
         facade.joinGame(request4, authData.authToken());
         LogoutRequest request1 = new LogoutRequest(authData.authToken());
         facade.logout(request1, authData.authToken());
         RegisterRequest request2 = new RegisterRequest("player2", "password", "p1@email.com");
         facade.register(request2);
-        JoinGameRequest request3 = new JoinGameRequest("white", result.gameID(), "player2");
-        Assertions.assertDoesNotThrow(() -> facade.joinGame(request3, authData.authToken()));
+        JoinGameRequest request3 = new JoinGameRequest("WHITE", result.gameID(), "player2");
+        Assertions.assertThrows(Throwable.class, () -> facade.joinGame(request3, authData.authToken()));
     }
 
     @Test
