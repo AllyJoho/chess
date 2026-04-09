@@ -1,18 +1,18 @@
 package client;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import chess.move.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static ui.EscapeSequences.*;
 
 public class PrintFunctions {
-    public static void printBoard(ChessBoard board, int perspective){
+    public static void printBoard(ChessBoard board, int perspective, Collection<ChessMove> moves){
         if(perspective == 1 || perspective == 3){
-            printChess(board, "W");
+            printChess(board, "W", moves);
         }else{
-            printChess(board,"B");
+            printChess(board,"B", moves);
         }
     }
 
@@ -22,7 +22,7 @@ public class PrintFunctions {
         System.out.print(textSettings + message + reset);
     }
 
-    private static void printChess(ChessBoard board, String color) {
+    private static void printChess(ChessBoard board, String color, Collection<ChessMove> moves) {
         String infoSettings = SET_TEXT_COLOR_BLACK + SET_BG_COLOR_WHITE;
         boolean direction = color.equals("W");
         int start = direction ? 7 : 0;
@@ -33,20 +33,29 @@ public class PrintFunctions {
         int stopj = direction ? 8 : -1;
         int stepj = direction ? 1 : -1;
 
+        Collection<ChessPosition> highlighted = new ArrayList<>();
+        ChessPosition startPos = null;
+        for (ChessMove move : moves){
+            highlighted.add(move.getEndPosition());
+            startPos = move.getStartPosition();
+        }
+
         printLetterRow(infoSettings, step);
         for (int i = start; i != stop; i += step) {
             printMessage(" " + (i + 1) + " ", infoSettings);
             for (int j = startj; j != stopj; j += stepj) {
                 ChessPosition pos = new ChessPosition(i+1,j+1);
                 ChessPiece piece = board.getPiece(pos);
-                printPiece(piece, pos);
+                boolean isHighlighted = highlighted.contains(pos);
+                boolean isMain = pos.equals(startPos);
+                printPiece(piece, pos, isHighlighted, isMain);
             }
             printMessage(" " + (i + 1) + " " + RESET_BG_COLOR + "\n", infoSettings);
         }
         printLetterRow(infoSettings, step);
     }
 
-    private static void printPiece(ChessPiece piece, ChessPosition pos){
+    private static void printPiece(ChessPiece piece, ChessPosition pos, boolean isHighlighted, boolean isMain){
         String pieceChar = EMPTY;
         if(piece != null){
             boolean isWhite = piece.getTeamColor().equals(ChessGame.TeamColor.WHITE);
@@ -61,6 +70,12 @@ public class PrintFunctions {
             pieceChar = isWhite ? SET_TEXT_COLOR_WHITE + pieceChar : SET_TEXT_COLOR_BLACK + pieceChar;
         }
         String color = (pos.getRow() + pos.getColumn()) % 2 == 0 ? SET_BG_COLOR_LIGHT_GREY : SET_BG_COLOR_DARK_GREEN;
+        if(isHighlighted){
+            color = (pos.getRow() + pos.getColumn()) % 2 == 0 ? SET_BG_COLOR_BLUE : SET_BG_COLOR_GREEN;
+        }
+        if(isMain){
+            color = SET_BG_COLOR_YELLOW;
+        }
         printMessage(pieceChar, color);
     }
 
@@ -69,7 +84,7 @@ public class PrintFunctions {
         char col = step > 0 ? 'a' : 'h';
         for (int i = 0; i < 8; i++) {
             printMessage(" " + col + " ", infoSettings);
-            col += step;
+            col += (char) step;
         }
         printMessage(EMPTY + RESET_BG_COLOR + "\n", infoSettings);
 
