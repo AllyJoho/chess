@@ -56,7 +56,8 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         ChessPiece startPiece = this.board.getPiece(startPosition);
-        for(ChessMove move : startPiece.pieceMoves(this.board, startPosition)){
+        Collection<ChessMove> pieceMoves = startPiece.pieceMoves(this.board, startPosition);
+        for(ChessMove move : pieceMoves){
             if(!simulateMove(move, startPiece.getTeamColor())){
                 possibleMoves.add(move);
             }

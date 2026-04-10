@@ -56,6 +56,14 @@ public class GameplayClient extends ChessClient {
     }
 
     private EvalResponse leaveGame() throws Exception {
+        GameData gameData = data.getGameData();
+        if(data.getGamePerspective() == 1){
+            JoinGameRequest request = new JoinGameRequest("WHITE", gameData.getGameID(), data.getUsername());
+            server.joinGame(request, data.getAuthToken());
+        } else if (data.getGamePerspective() == 2) {
+            JoinGameRequest request = new JoinGameRequest("BLACK", gameData.getGameID(), data.getUsername());
+            server.joinGame(request, data.getAuthToken());
+        }
         data.setGamePerspective(0);
         data.setGameData(null);
         return new EvalResponse("", 1, data);
@@ -63,13 +71,6 @@ public class GameplayClient extends ChessClient {
 
     private EvalResponse resign() throws Exception {
         GameData gameData = data.getGameData();
-        if(data.getGamePerspective() == 1){
-            JoinGameRequest request = new JoinGameRequest("WHITE", gameData.getGameID(), "");
-            server.joinGame(request, data.getAuthToken());
-        } else if (data.getGamePerspective() == 2) {
-            JoinGameRequest request = new JoinGameRequest("BLACK", gameData.getGameID(), "");
-            server.joinGame(request, data.getAuthToken());
-        }
         data.setGamePerspective(0);
         data.setGameData(null);
         return new EvalResponse("", 2, data);
