@@ -8,11 +8,14 @@ import java.util.Collection;
 import static ui.EscapeSequences.*;
 
 public class PrintFunctions {
-    public static void printBoard(ChessBoard board, int perspective, Collection<ChessMove> moves){
+    public static void printBoard(ChessBoard board,
+                                  int perspective,
+                                  Collection<ChessMove> moves,
+                                  ChessPosition startPos){
         if(perspective == 1 || perspective == 3){
-            printChess(board, "W", moves);
+            printChess(board, "W", moves, startPos);
         }else{
-            printChess(board,"B", moves);
+            printChess(board,"B", moves, startPos);
         }
     }
 
@@ -22,7 +25,10 @@ public class PrintFunctions {
         System.out.print(textSettings + message + reset);
     }
 
-    private static void printChess(ChessBoard board, String color, Collection<ChessMove> moves) {
+    private static void printChess(ChessBoard board,
+                                   String color,
+                                   Collection<ChessMove> moves,
+                                   ChessPosition startPos) {
         String infoSettings = SET_TEXT_COLOR_BLACK + SET_BG_COLOR_WHITE;
         boolean direction = color.equals("W");
         int start = direction ? 7 : 0;
@@ -34,10 +40,8 @@ public class PrintFunctions {
         int stepj = direction ? 1 : -1;
 
         Collection<ChessPosition> highlighted = new ArrayList<>();
-        ChessPosition startPos = null;
         for (ChessMove move : moves){
             highlighted.add(move.getEndPosition());
-            startPos = move.getStartPosition();
         }
 
         printLetterRow(infoSettings, step);
@@ -74,7 +78,7 @@ public class PrintFunctions {
             color = (pos.getRow() + pos.getColumn()) % 2 == 0 ? SET_BG_COLOR_BLUE : SET_BG_COLOR_GREEN;
         }
         if(isMain){
-            color = SET_BG_COLOR_YELLOW;
+            color = SET_BG_COLOR_MAGENTA;
         }
         printMessage(pieceChar, color);
     }

@@ -32,13 +32,13 @@ public class GameService {
         String whiteName = game.getWhiteUsername();
         String blackName = game.getBlackUsername();
         if(request.playerColor().equals("WHITE")){
-            if (whiteName == null){
+            if (whiteName == null || whiteName.equals(request.username())){
                 whiteName = request.username();
-            }else {
+            } else {
                 throw new DataAccessException("already taken");
             }
         } else if (request.playerColor().equals("BLACK")) {
-            if (blackName == null){
+            if (blackName == null || blackName.equals(request.username())){
                 blackName = request.username();
             }else {
                 throw new DataAccessException("already taken");

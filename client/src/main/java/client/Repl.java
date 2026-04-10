@@ -28,10 +28,6 @@ public class Repl {
 
         ClientData data = new ClientData();
         while (state != 3){
-            if(state == 2){
-                data = client.displayBoard(data);
-                setState(1);
-            }
             EvalResponse response = getInput(scanner, data);
             if(response == null){
                 continue;
