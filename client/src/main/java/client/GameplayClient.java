@@ -37,10 +37,30 @@ public class GameplayClient extends ChessClient {
         }
     }
 
-    private EvalResponse move(String[] params) {
-        Collection<ChessMove> moves =  data.getGameData().getGame().validMoves(getPosFromString(params[0]));
-        printBoard(data.getGameData().getGame().getBoard(), data.getGamePerspective(), moves, null);
-        return new EvalResponse("", 2, data);
+    private EvalResponse move(String[] params) throws Exception {
+        String message = "";
+        if(params.length == 2){
+            ChessPosition startPos = getPosFromString(params[0]);
+            ChessPosition endPos = getPosFromString(params[1]);
+            Collection<ChessMove> moves =  data.getGameData().getGame().validMoves(startPos);
+            Collection<ChessMove> filteredMoves = moves.stream()
+                    .filter(e -> e.getStartPosition().equals(startPos))
+                    .filter(e -> e.getEndPosition().equals(endPos))
+                    .toList();
+            if(filteredMoves.isEmpty()){
+                message = "This isn't a valid move!";
+            } else if (filteredMoves.size() == 1) {
+//                Add make move logic in a bit
+                message = "Move Successful!";
+            } else {
+                message = "Your pawn can be promoted! What piece should it be promoted to?";
+//                Add that logic
+            }
+        }else{
+            throw new Exception("Incorrect arguments. Please format your move request like this: \n" +
+                    "move <START POS> <END POS>");
+        }
+        return new EvalResponse(message, 2, data);
     }
 
     private EvalResponse displayBoard() {
@@ -48,10 +68,15 @@ public class GameplayClient extends ChessClient {
         return new EvalResponse("", 2, data);
     }
 
-    private EvalResponse highlightMoves(String[] params) {
-        ChessPosition startPos = getPosFromString(params[0]);
-        Collection<ChessMove> moves =  data.getGameData().getGame().validMoves(startPos);
-        printBoard(data.getGameData().getGame().getBoard(), data.getGamePerspective(), moves, startPos);
+    private EvalResponse highlightMoves(String[] params) throws Exception {
+        if(params.length == 1){
+            ChessPosition startPos = getPosFromString(params[0]);
+            Collection<ChessMove> moves =  data.getGameData().getGame().validMoves(startPos);
+            printBoard(data.getGameData().getGame().getBoard(), data.getGamePerspective(), moves, startPos);
+        }else{
+            throw new Exception("Incorrect arguments. Please format your highlight request like this: \n" +
+                    "highlight <POSITION>");
+        }
         return new EvalResponse("", 2, data);
     }
 
@@ -71,13 +96,25 @@ public class GameplayClient extends ChessClient {
 
     private EvalResponse resign() throws Exception {
         GameData gameData = data.getGameData();
+        gameData.getGame().setGameOver(true);
         data.setGamePerspective(0);
         data.setGameData(null);
         return new EvalResponse("", 2, data);
     }
 
-    private ChessPosition getPosFromString(String pos){
-        return new ChessPosition(2, 1);
+    private ChessPosition getPosFromString(String pos) throws Exception {
+        if (pos == null || pos.length() < 2) {
+            throw new Exception("Please format the position as column then row with no space");
+        }
+        String clean = pos.toLowerCase().trim();
+        String letterPart = clean.replaceAll("[^a-z]", "");
+        String digitPart = clean.replaceAll("[^0-9]", "");
+        if (letterPart.isEmpty() || digitPart.isEmpty()) {
+            throw new Exception("Position missing row or column.");
+        }
+        int col = letterPart.charAt(0) - 'a';
+        int row = Integer.parseInt(digitPart) - 1;
+        return new ChessPosition(row, col);
     }
 
     private EvalResponse help(){
