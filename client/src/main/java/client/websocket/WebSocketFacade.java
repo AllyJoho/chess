@@ -1,5 +1,6 @@
 package client.websocket;
 
+import client.Repl;
 import com.google.gson.Gson;
 
 import client.ChessClient;
@@ -15,9 +16,9 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
 
     Session session;
-    ChessClient notificationHandler;
+    Repl notificationHandler;
 
-    public WebSocketFacade(String url, ChessClient notificationHandler) throws Exception {
+    public WebSocketFacade(String url, Repl notificationHandler) throws Exception {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -30,6 +31,7 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
+                    System.out.println(message);
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
                     notificationHandler.notify(notification);
                 }
@@ -46,7 +48,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void enterGame(String authToken, int gameID) throws Exception {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());

@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessMove;
 import chess.ChessPosition;
+import client.websocket.WebSocketFacade;
 import model.GameData;
 import request.JoinGameRequest;
 import server.ServerFacade;
@@ -13,8 +14,10 @@ import java.util.Collection;
 import static client.PrintFunctions.printBoard;
 
 public class GameplayClient extends ChessClient {
-    public GameplayClient(ServerFacade server) {
+    WebSocketFacade ws;
+    public GameplayClient(ServerFacade server, WebSocketFacade ws) {
         super(server);
+        this.ws = ws;
     }
 
     public EvalResponse eval(EvalRequest request){

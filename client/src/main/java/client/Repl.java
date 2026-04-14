@@ -1,12 +1,17 @@
 package client;
 
 import client.websocket.WebSocketFacade;
+import com.sun.nio.sctp.NotificationHandler;
+import model.GameData;
 import server.ServerFacade;
+import websocket.messages.ServerMessage;
+
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 import static client.PrintFunctions.printMessage;
 
 public class Repl {
+
     private final ChessClient preLoginClient;
     private final ChessClient postLoginClient;
     private final ChessClient gameplayClient;
@@ -17,12 +22,12 @@ public class Repl {
 
     public Repl(String serverUrl) throws Exception {
         ServerFacade server = new ServerFacade(serverUrl);
+        this.ws = new WebSocketFacade(serverUrl, this);
         this.preLoginClient = new PreLoginClient(server);
-        this.postLoginClient = new PostLoginClient(server);
-        this.gameplayClient = new GameplayClient(server);
+        this.postLoginClient = new PostLoginClient(server, this.ws);
+        this.gameplayClient = new GameplayClient(server, this.ws);
         this.client = this.preLoginClient;
         this.state = 0;
-        this.ws = new WebSocketFacade(serverUrl, client);
     }
 
     public void run(){
@@ -72,4 +77,9 @@ public class Repl {
             default -> null;
         };
     }
+
+    public void notify(ServerMessage message) {
+        System.out.println(message.getMessage());
+    }
+
 }

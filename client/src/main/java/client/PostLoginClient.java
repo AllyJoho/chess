@@ -1,5 +1,6 @@
 package client;
 
+import client.websocket.WebSocketFacade;
 import model.GameData;
 import request.*;
 import result.*;
@@ -10,8 +11,10 @@ import java.util.Arrays;
 
 public class PostLoginClient extends ChessClient {
     ArrayList<GameData> gamesLink;
-    public PostLoginClient(ServerFacade server) {
+    WebSocketFacade ws;
+    public PostLoginClient(ServerFacade server, WebSocketFacade ws) {
         super(server);
+        this.ws = ws;
         gamesLink = new ArrayList<>();
     }
 
@@ -74,6 +77,7 @@ public class PostLoginClient extends ChessClient {
             }else{
                 data.setGamePerspective(2);
             }
+            ws.enterGame(data.getAuthToken(), gameData.getGameID());
         }else{
             throw new Exception("Incorrect arguments. Please format your join request like this: \n" +
                     "join <ID> [WHITE | BLACK]");
