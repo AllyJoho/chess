@@ -1,5 +1,6 @@
 package client;
 
+import client.websocket.WebSocketFacade;
 import server.ServerFacade;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
@@ -11,14 +12,17 @@ public class Repl {
     private final ChessClient gameplayClient;
     private ChessClient client;
     private int state;
+    private final WebSocketFacade ws;
 
-    public Repl(String serverUrl) {
+
+    public Repl(String serverUrl) throws Exception {
         ServerFacade server = new ServerFacade(serverUrl);
         this.preLoginClient = new PreLoginClient(server);
         this.postLoginClient = new PostLoginClient(server);
         this.gameplayClient = new GameplayClient(server);
         this.client = this.preLoginClient;
         this.state = 0;
+        this.ws = new WebSocketFacade(serverUrl, client);
     }
 
     public void run(){

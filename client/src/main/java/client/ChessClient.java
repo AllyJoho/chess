@@ -1,6 +1,7 @@
 package client;
 
 import server.ServerFacade;
+import websocket.messages.ServerMessage;
 
 public class ChessClient {
     protected final ServerFacade server;
@@ -15,6 +16,10 @@ public class ChessClient {
     }
 
     public ClientData displayBoard(ClientData data) {return null;}
+
+    public void notify(ServerMessage message) {
+        System.out.println(message.getMessage());
+    }
 
     protected int intFromStr(String str) throws Exception {
         try {

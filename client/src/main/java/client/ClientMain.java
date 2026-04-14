@@ -6,7 +6,11 @@ public class ClientMain {
         if(args.length == 1){
             serverUrl = args[0];
         }
-        new Repl(serverUrl).run();
+        try {
+            new Repl(serverUrl).run();
+        } catch (Exception e) {
+            System.out.println("Something went wrong with websocket probably");
+        }
     }
 }
 //start repl
