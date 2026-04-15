@@ -45,4 +45,15 @@ public class ConnectionManager {
             }
         }
     }
+
+    public void userNotify(Session session, ServerMessage notification){
+        String msg = new Gson().toJson(notification);
+        if (session.isOpen()) {
+            try {
+                session.getRemote().sendString(msg);
+            } catch (IOException e) {
+                System.out.println("Error: websocket");
+            }
+        }
+    }
 }

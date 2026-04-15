@@ -48,12 +48,12 @@ public class GameplayClient extends ChessClient {
 
     private EvalResponse move(String[] params) throws Exception {
         String message = "";
-        if(data.getGamePerspective() == 3){
-            throw new Exception("You're observing and can't play the game");
-        }
-        if(data.getGameData().getGame().getGameState() != 0){
-            throw new Exception("The games's over!");
-        }
+//        if(data.getGamePerspective() == 3){
+//            throw new Exception("You're observing and can't play the game");
+//        }
+//        if(data.getGameData().getGame().getGameState() != 0){
+//            throw new Exception("The games's over!");
+//        }
         if(params.length == 2){
             ChessPosition startPos = getPosFromString(params[0]);
             ChessPosition endPos = getPosFromString(params[1]);
@@ -89,6 +89,7 @@ public class GameplayClient extends ChessClient {
             gameDAO.updateGame(gameData);
             ws.makeMove(data, move);
             message = "Move Successful!";
+//            here
         }else{
             throw new Exception("Incorrect arguments. Please format your move request like this: \n" +
                     "move <START POS> <END POS>");

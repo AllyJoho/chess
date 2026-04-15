@@ -87,9 +87,7 @@ public class WebSocketFacade extends Endpoint {
             var action = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE,
                     data.getAuthToken(),
                     data.getGameData().getGameID(),
-                    move,
-                    data.getGamePerspective(),
-                    data.getGameData().getGame().getBoard());
+                    move);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
