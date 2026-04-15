@@ -1,8 +1,6 @@
 package client;
 
-import model.GameData;
 import server.ServerFacade;
-import websocket.messages.ServerMessage;
 
 public class ChessClient {
     protected final ServerFacade server;
@@ -15,8 +13,6 @@ public class ChessClient {
     public EvalResponse eval(EvalRequest request){
         return new EvalResponse("", 0, request.data());
     }
-
-    public ClientData displayBoard(ClientData data) {return null;}
 
     protected int intFromStr(String str) throws Exception {
         try {
