@@ -79,13 +79,27 @@ public class WebsocketHandler implements WsMessageHandler {
         }
     }
 
-    private void leave(WsMessageContext ctx, ConnectAndLeaveCommand cmd) {
+    private void leave(WsMessageContext ctx, UserGameCommand cmd) {
         connections.removePlayer(cmd.getGameID(), ctx.session);
         try {
+            GameData gameData = gameDAO.getGame(cmd.getGameID());
             String username = authDAO.getSession(cmd.getAuthToken()).getUsername();
+            String whiteUsername = gameData.getWhiteUsername();
+            String blackUsername =  gameData.getBlackUsername();
+            if(username.equals(gameData.getWhiteUsername())){
+                whiteUsername = null;
+            } else if (username.equals(gameData.getBlackUsername())){
+                blackUsername = null;
+            }
             var message = String.format("%s left the game", username);
             var notification = new ServerMessage(notifType, message, null);
             connections.broadcast(cmd.getGameID(), ctx.session, notification);
+            gameData = new GameData(gameData.getGameID(),
+                    whiteUsername,
+                    blackUsername,
+                    gameData.getGameName(),
+                    gameData.getGame());
+            gameDAO.updateGame(gameData);
         } catch (Exception e) {
             var message = "Error leaving game";
             var notification = new ServerMessage(errorType, null, message);

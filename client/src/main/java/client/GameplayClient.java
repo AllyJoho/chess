@@ -20,7 +20,6 @@ import static client.PrintFunctions.printMessage;
 
 public class GameplayClient extends ChessClient {
     WebSocketFacade ws;
-    GameDAO gameDAO = new MySqlGameDAO();
     public GameplayClient(ServerFacade server, WebSocketFacade ws) {
         super(server);
         this.ws = ws;
@@ -80,13 +79,6 @@ public class GameplayClient extends ChessClient {
 //                    case 1
 //                }
             }
-            game.makeMove(move);
-            gameData = new GameData(gameData.getGameID(),
-                    gameData.getWhiteUsername(),
-                    gameData.getBlackUsername(),
-                    gameData.getGameName(),
-                    game);
-            gameDAO.updateGame(gameData);
             ws.makeMove(data, move);
             message = "Move Successful!";
 //            here
@@ -117,13 +109,13 @@ public class GameplayClient extends ChessClient {
     private EvalResponse leaveGame() throws Exception {
         String message =  "You left the game";
         GameData gameData = data.getGameData();
-        if(data.getGamePerspective() == 1){
-            JoinGameRequest request = new JoinGameRequest("WHITE", gameData.getGameID(), data.getUsername());
-            server.joinGame(request, data.getAuthToken());
-        } else if (data.getGamePerspective() == 2) {
-            JoinGameRequest request = new JoinGameRequest("BLACK", gameData.getGameID(), data.getUsername());
-            server.joinGame(request, data.getAuthToken());
-        }
+//        if(data.getGamePerspective() == 1){
+//            JoinGameRequest request = new JoinGameRequest("WHITE", gameData.getGameID(), data.getUsername());
+//            server.joinGame(request, data.getAuthToken());
+//        } else if (data.getGamePerspective() == 2) {
+//            JoinGameRequest request = new JoinGameRequest("BLACK", gameData.getGameID(), data.getUsername());
+//            server.joinGame(request, data.getAuthToken());
+//        }
         ws.leaveGame(data);
         data.setGamePerspective(0);
         data.setGameData(null);
