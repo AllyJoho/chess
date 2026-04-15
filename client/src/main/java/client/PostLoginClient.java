@@ -8,6 +8,7 @@ import server.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 public class PostLoginClient extends ChessClient {
     ArrayList<GameData> gamesLink;
@@ -53,13 +54,13 @@ public class PostLoginClient extends ChessClient {
 
     private EvalResponse list() throws Exception {
         ListGameResult result = server.listGames(data.getAuthToken());
-        StringBuilder resultString = new StringBuilder();
+        StringJoiner resultString = new StringJoiner("\n");
         for (int i = 0; i < result.games().size(); i++) {
             GameData gameData = result.games().get(i);
             String gameString = (i+1) + " - " + gameData.getGameName() + " WHITE: " +
-                    gameData.getWhiteUsername() + " BLACK: " + gameData.getBlackUsername() + "\n";
+                    gameData.getWhiteUsername() + " BLACK: " + gameData.getBlackUsername();
             gamesLink.add(gameData);
-            resultString.append(gameString);
+            resultString.add(gameString);
         }
         return new EvalResponse(resultString.toString(), 1, data);
     }
@@ -105,7 +106,6 @@ public class PostLoginClient extends ChessClient {
         server.logout(request, data.getAuthToken());
         data.setUsername("");
         data.setAuthToken("");
-        ws.leaveGame(data.getAuthToken(), data.getGameData().getGameID(), data.getUsername());
         return new EvalResponse(message, 0, data);
     }
 

@@ -31,7 +31,7 @@ public class ServerMessage {
         this.serverMessageType = type;
         this.game = game;
         this.message = message;
-        this.errorMessage = message;
+        this.errorMessage = errorMessage;
     }
 
     public ServerMessageType getServerMessageType() {

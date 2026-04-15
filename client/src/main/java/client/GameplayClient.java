@@ -84,6 +84,7 @@ public class GameplayClient extends ChessClient {
     }
 
     private EvalResponse leaveGame() throws Exception {
+        String message =  "You left the game";
         GameData gameData = data.getGameData();
         if(data.getGamePerspective() == 1){
             JoinGameRequest request = new JoinGameRequest("WHITE", gameData.getGameID(), data.getUsername());
@@ -92,9 +93,10 @@ public class GameplayClient extends ChessClient {
             JoinGameRequest request = new JoinGameRequest("BLACK", gameData.getGameID(), data.getUsername());
             server.joinGame(request, data.getAuthToken());
         }
+        ws.leaveGame(data.getAuthToken(), data.getGameData().getGameID(), data.getUsername());
         data.setGamePerspective(0);
         data.setGameData(null);
-        return new EvalResponse("", 1, data);
+        return new EvalResponse(message, 1, data);
     }
 
     private EvalResponse resign() throws Exception {

@@ -27,7 +27,7 @@ public class WebsocketHandler implements WsMessageHandler {
         }
     }
 
-    private void connect(WsMessageContext ctx, UserGameCommand cmd) throws IOException {
+    private void connect(WsMessageContext ctx, UserGameCommand cmd) {
 //        ctx.session.getRemote().sendString("connected");
         connections.addPlayer(ctx.session, cmd.getGameID());
         var message = String.format("%s joined the game", cmd.getUsername());
@@ -36,8 +36,11 @@ public class WebsocketHandler implements WsMessageHandler {
 
     }
 
-    private void leave(WsMessageContext ctx, UserGameCommand cmd) throws IOException {
-        ctx.session.getRemote().sendString("leave");
+    private void leave(WsMessageContext ctx, UserGameCommand cmd) {
+        connections.removePlayer(cmd.getGameID(), ctx.session);
+        var message = String.format("%s left the game", cmd.getUsername());
+        var notification = new ServerMessage(notifType, null, message, null);
+        connections.broadcast(cmd.getGameID(), ctx.session, notification);
     }
 
     private void makeMove(WsMessageContext ctx, UserGameCommand cmd) throws IOException {

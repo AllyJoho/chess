@@ -29,14 +29,18 @@ public class ConnectionManager {
         return connections.getOrDefault(gameID, Collections.emptySet());
     }
 
-    public void broadcast(int gameID, Session excludeSession, ServerMessage notification) throws IOException {
+    public void broadcast(int gameID, Session excludeSession, ServerMessage notification) {
         String msg = new Gson().toJson(notification);
         Set<Session> players = connections.get(gameID);
 
         if (players != null) {
             for (Session s : players) {
                 if (s.isOpen() && !s.equals(excludeSession)) {
-                    s.getRemote().sendString(msg);
+                    try {
+                        s.getRemote().sendString(msg);
+                    } catch (IOException e) {
+                        System.out.println("Error: websocket");
+                    }
                 }
             }
         }

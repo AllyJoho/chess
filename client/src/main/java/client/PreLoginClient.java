@@ -56,7 +56,7 @@ public class PreLoginClient extends ChessClient {
             throw new Exception("Incorrect arguments. Please format your login request like this: \n" +
                     "login <USERNAME> <PASSWORD>");
         }
-        data.setAuthToken(result.username());
+        data.setUsername(result.username());
         data.setAuthToken(result.authToken());
         return new EvalResponse(message, 1, data);
     }
