@@ -4,19 +4,14 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import client.websocket.WebSocketFacade;
-import dataaccess.GameDAO;
-import dataaccess.MySqlGameDAO;
 import model.GameData;
-import request.JoinGameRequest;
 import server.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Scanner;
 
 import static client.PrintFunctions.printBoard;
-import static client.PrintFunctions.printMessage;
 
 public class GameplayClient extends ChessClient {
     WebSocketFacade ws;
