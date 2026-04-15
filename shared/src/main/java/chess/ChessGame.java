@@ -15,7 +15,7 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
-    private boolean gameOver = false;
+    private int gameState = 0;
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
@@ -42,8 +42,8 @@ public class ChessGame {
     /**
      * @return If the game is over
      */
-    public boolean getGameOver() {
-        return this.gameOver;
+    public int getGameState() {
+        return this.gameState;
     }
 
     /**
@@ -51,8 +51,8 @@ public class ChessGame {
      *
      * @param game the team whose turn it is
      */
-    public void setGameOver(boolean game) {
-        this.gameOver = game;
+    public void setGameState(int game) {
+        this.gameState = game;
     }
 
     /**

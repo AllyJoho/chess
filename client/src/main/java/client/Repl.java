@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessBoard;
 import client.websocket.WebSocketFacade;
 import model.GameData;
 import server.ServerFacade;
@@ -76,10 +77,7 @@ public class Repl {
         switch (message.getServerMessageType()){
             case NOTIFICATION -> printMessage(message.getMessage(), SET_TEXT_COLOR_GREEN);
             case ERROR -> printMessage(message.getErrorMessage(), SET_TEXT_COLOR_RED);
-            case LOAD_GAME -> {
-                GameData game = message.getGame();
-                printBoard(game.getGame().getBoard(), 1, new ArrayList<>(), null);
-            }
+            case LOAD_GAME -> printBoard(message.getGame(), message.getGamePerspective(), new ArrayList<>(), null);
         }
         System.out.println(message.getMessage());
         printInput(state);

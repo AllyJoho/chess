@@ -1,8 +1,11 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import client.websocket.WebSocketFacade;
+import dataaccess.GameDAO;
+import dataaccess.MySqlGameDAO;
 import model.GameData;
 import request.JoinGameRequest;
 import server.ServerFacade;
@@ -10,11 +13,14 @@ import server.ServerFacade;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Scanner;
 
 import static client.PrintFunctions.printBoard;
+import static client.PrintFunctions.printMessage;
 
 public class GameplayClient extends ChessClient {
     WebSocketFacade ws;
+    GameDAO gameDAO = new MySqlGameDAO();
     public GameplayClient(ServerFacade server, WebSocketFacade ws) {
         super(server);
         this.ws = ws;
@@ -42,23 +48,47 @@ public class GameplayClient extends ChessClient {
 
     private EvalResponse move(String[] params) throws Exception {
         String message = "";
+        if(data.getGamePerspective() == 3){
+            throw new Exception("You're observing and can't play the game");
+        }
+        if(data.getGameData().getGame().getGameState() != 0){
+            throw new Exception("The games's over!");
+        }
         if(params.length == 2){
             ChessPosition startPos = getPosFromString(params[0]);
             ChessPosition endPos = getPosFromString(params[1]);
+            GameData gameData = data.getGameData();
+            ChessGame game = gameData.getGame();
+
+            ChessMove move = new ChessMove(startPos, endPos, null);
             Collection<ChessMove> moves =  data.getGameData().getGame().validMoves(startPos);
             Collection<ChessMove> filteredMoves = moves.stream()
                     .filter(e -> e.getStartPosition().equals(startPos))
                     .filter(e -> e.getEndPosition().equals(endPos))
                     .toList();
             if(filteredMoves.isEmpty()){
-                message = "This isn't a valid move!";
-            } else if (filteredMoves.size() == 1) {
-//                Add make move logic in a bit
-                message = "Move Successful!";
-            } else {
-                message = "Your pawn can be promoted! What piece should it be promoted to?";
-//                Add that logic
+                throw new Exception("This isn't a valid move!");
+//            } else if (filteredMoves.size() > 1) {
+//                move = new ChessMove(startPos, endPos, null);
+//                message = "Your pawn can be promoted! What piece should it be promoted to?\n" +
+//                        "1- Queen \n2- Knight \n3- Bishop \n4- Rook";
+//                printMessage(message, "");
+//                Scanner scanner = new Scanner(System.in);
+//                String line = scanner.nextLine();
+//                int pieceChoice = intFromStr(line);
+//                switch (pieceChoice){
+//                    case 1
+//                }
             }
+            game.makeMove(move);
+            gameData = new GameData(gameData.getGameID(),
+                    gameData.getWhiteUsername(),
+                    gameData.getBlackUsername(),
+                    gameData.getGameName(),
+                    game);
+            gameDAO.updateGame(gameData);
+            ws.makeMove(data, move);
+            message = "Move Successful!";
         }else{
             throw new Exception("Incorrect arguments. Please format your move request like this: \n" +
                     "move <START POS> <END POS>");
@@ -100,12 +130,31 @@ public class GameplayClient extends ChessClient {
     }
 
     private EvalResponse resign() throws Exception {
+        if(data.getGamePerspective() == 3){
+            throw new Exception("You're observing and can't play the game");
+        }
         GameData gameData = data.getGameData();
-        gameData.getGame().setGameOver(true);
+        gameData.getGame().setGameState(1);
         data.setGamePerspective(0);
         data.setGameData(null);
         return new EvalResponse("", 2, data);
     }
+
+//    private ChessMove getPromotion(ChessMove move) throws Exception {
+//        Scanner scanner = new Scanner(System.in);
+//        int pieceChoice = 0;
+//        while (pieceChoice == 0) {
+//            String message = "Your pawn can be promoted! What piece should it be promoted to?\n" +
+//                    "1- Queen \n2- Knight \n3- Bishop \n4- Rook";
+//            printMessage(message, "");
+//            String line = scanner.nextLine();
+//            pieceChoice = intFromStr(line);
+//            switch (pieceChoice) {
+//                case 1 -> m
+//
+//            }
+//        }
+//    }
 
     private ChessPosition getPosFromString(String pos) throws Exception {
         if (pos == null || pos.length() < 2) {

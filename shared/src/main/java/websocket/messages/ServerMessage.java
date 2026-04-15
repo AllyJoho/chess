@@ -1,6 +1,7 @@
 package websocket.messages;
 
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import model.GameData;
 
@@ -15,7 +16,9 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
 
-    private final GameData game;
+    private final ChessBoard game;
+
+    private final int gamePerspective;
 
     private final String message;
 
@@ -27,18 +30,27 @@ public class ServerMessage {
         NOTIFICATION
     }
 
-    public ServerMessage(ServerMessageType type, GameData game, String message, String errorMessage) {
+    public ServerMessage(ServerMessageType type, String message, String errorMessage) {
         this.serverMessageType = type;
-        this.game = game;
+        this.game = null;
         this.message = message;
         this.errorMessage = errorMessage;
+        this.gamePerspective = 0;
+    }
+
+    public ServerMessage(ServerMessageType type, ChessBoard game, int gamePerspective) {
+        this.serverMessageType = type;
+        this.game = game;
+        this.message = null;
+        this.errorMessage = null;
+        this.gamePerspective = gamePerspective;
     }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
 
-    public GameData getGame() {
+    public ChessBoard getGame() {
         return this.game;
     }
 
@@ -49,6 +61,11 @@ public class ServerMessage {
     public String getErrorMessage() {
         return this.errorMessage;
     }
+
+    public int getGamePerspective(){
+        return this.gamePerspective;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
