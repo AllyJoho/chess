@@ -93,7 +93,7 @@ public class GameplayClient extends ChessClient {
             JoinGameRequest request = new JoinGameRequest("BLACK", gameData.getGameID(), data.getUsername());
             server.joinGame(request, data.getAuthToken());
         }
-        ws.leaveGame(data.getAuthToken(), data.getGameData().getGameID(), data.getUsername());
+        ws.leaveGame(data);
         data.setGamePerspective(0);
         data.setGameData(null);
         return new EvalResponse(message, 1, data);

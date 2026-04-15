@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.jetbrains.annotations.NotNull;
+import websocket.commands.ConnectAndLeaveCommand;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -20,15 +22,14 @@ public class WebsocketHandler implements WsMessageHandler {
         Gson gson = new Gson();
         UserGameCommand cmd = gson.fromJson(ctx.message(), UserGameCommand.class);
         switch (cmd.getCommandType()){
-            case CONNECT -> connect(ctx, cmd);
-            case LEAVE -> leave(ctx, cmd);
-            case MAKE_MOVE -> makeMove(ctx, cmd);
+            case CONNECT -> connect(ctx, gson.fromJson(ctx.message(), ConnectAndLeaveCommand.class));
+            case LEAVE -> leave(ctx, gson.fromJson(ctx.message(), ConnectAndLeaveCommand.class));
+            case MAKE_MOVE -> makeMove(ctx, gson.fromJson(ctx.message(), MakeMoveCommand.class));
             case RESIGN -> resign(ctx, cmd);
         }
     }
 
-    private void connect(WsMessageContext ctx, UserGameCommand cmd) {
-//        ctx.session.getRemote().sendString("connected");
+    private void connect(WsMessageContext ctx, ConnectAndLeaveCommand cmd) {
         connections.addPlayer(ctx.session, cmd.getGameID());
         var message = String.format("%s joined the game", cmd.getUsername());
         var notification = new ServerMessage(notifType, null, message, null);
@@ -36,7 +37,7 @@ public class WebsocketHandler implements WsMessageHandler {
 
     }
 
-    private void leave(WsMessageContext ctx, UserGameCommand cmd) {
+    private void leave(WsMessageContext ctx, ConnectAndLeaveCommand cmd) {
         connections.removePlayer(cmd.getGameID(), ctx.session);
         var message = String.format("%s left the game", cmd.getUsername());
         var notification = new ServerMessage(notifType, null, message, null);

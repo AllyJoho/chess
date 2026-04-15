@@ -1,14 +1,14 @@
 package client;
 
 import client.websocket.WebSocketFacade;
-import com.sun.nio.sctp.NotificationHandler;
 import model.GameData;
 import server.ServerFacade;
 import websocket.messages.ServerMessage;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
-import static client.PrintFunctions.printMessage;
+import static client.PrintFunctions.*;
 
 public class Repl {
 
@@ -47,13 +47,7 @@ public class Repl {
     }
 
     private EvalResponse getInput(Scanner scanner, ClientData data){
-        String stage = switch (state) {
-            case 0 -> "[LOGGED OUT]";
-            case 1 -> "[LOGGED IN]";
-            case 2 -> "[IN GAME]";
-            default -> null;
-        };
-        printMessage(stage + ">>> ", "");
+        printInput(state);
         String line = scanner.nextLine();
         try {
             EvalRequest request = new EvalRequest(line, data);
@@ -79,7 +73,16 @@ public class Repl {
     }
 
     public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()){
+            case NOTIFICATION -> printMessage(message.getMessage(), SET_TEXT_COLOR_GREEN);
+            case ERROR -> printMessage(message.getErrorMessage(), SET_TEXT_COLOR_RED);
+            case LOAD_GAME -> {
+                GameData game = message.getGame();
+                printBoard(game.getGame().getBoard(), 1, new ArrayList<>(), null);
+            }
+        }
         System.out.println(message.getMessage());
+        printInput(state);
     }
 
 }

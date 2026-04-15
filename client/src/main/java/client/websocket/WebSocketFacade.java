@@ -1,11 +1,13 @@
 package client.websocket;
 
+import chess.ChessMove;
+import client.ClientData;
 import client.Repl;
 import com.google.gson.Gson;
 
 import client.ChessClient;
 import jakarta.websocket.*;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -45,36 +47,49 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void enterGame(String authToken, int gameID, String username) throws Exception {
+    public void enterGame(ClientData data) throws Exception {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username);
+            var action = new ConnectAndLeaveCommand(UserGameCommand.CommandType.CONNECT,
+                    data.getAuthToken(),
+                    data.getGameData().getGameID(),
+                    data.getUsername());
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }
     }
 
-    public void leaveGame(String authToken, int gameID, String username) throws Exception {
+    public void leaveGame(ClientData data) throws Exception {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username);
+            var action = new ConnectAndLeaveCommand(UserGameCommand.CommandType.LEAVE,
+                    data.getAuthToken(),
+                    data.getGameData().getGameID(),
+                    data.getUsername());
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }
     }
 
-    public void resign(String authToken, int gameID, String username) throws Exception {
+    public void resign(ClientData data) throws Exception {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, username);
+            var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN,
+                    data.getAuthToken(),
+                    data.getGameData().getGameID());
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }
     }
 
-    public void makeMove(String authToken, int gameID, String username) throws Exception {
+    public void makeMove(ClientData data, ChessMove move) throws Exception {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username);
+            var action = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE,
+                    data.getAuthToken(),
+                    data.getGameData().getGameID(),
+                    move,
+                    data.getGamePerspective(),
+                    data.getGameData().getGame().getBoard());
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());

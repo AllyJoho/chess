@@ -25,6 +25,16 @@ public class PrintFunctions {
         System.out.print(textSettings + message + reset);
     }
 
+    public static void printInput(int state){
+        String stage = switch (state) {
+            case 0 -> "[LOGGED OUT]";
+            case 1 -> "[LOGGED IN]";
+            case 2 -> "[IN GAME]";
+            default -> null;
+        };
+        printMessage(stage + ">>> ", "");
+    }
+
     private static void printChess(ChessBoard board,
                                    String color,
                                    Collection<ChessMove> moves,

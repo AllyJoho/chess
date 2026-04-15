@@ -78,7 +78,7 @@ public class PostLoginClient extends ChessClient {
             }else{
                 data.setGamePerspective(2);
             }
-            ws.enterGame(data.getAuthToken(), gameData.getGameID(), data.getUsername());
+            ws.enterGame(data);
         }else{
             throw new Exception("Incorrect arguments. Please format your join request like this: \n" +
                     "join <ID> [WHITE | BLACK]");
@@ -92,7 +92,7 @@ public class PostLoginClient extends ChessClient {
             GameData gameData = getGame(intFromStr(params[0]));
             data.setGameData(gameData);
             data.setGamePerspective(3);
-            ws.enterGame(data.getAuthToken(), gameData.getGameID(), data.getUsername());
+            ws.enterGame(data);
             return new EvalResponse(message, 2, data);
         }else{
             throw new Exception("Incorrect arguments. Please format your create game request like this: \n" +
