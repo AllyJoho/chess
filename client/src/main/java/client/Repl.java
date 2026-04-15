@@ -79,7 +79,6 @@ public class Repl {
             case ERROR -> printMessage(message.getErrorMessage(), SET_TEXT_COLOR_RED);
             case LOAD_GAME -> printBoard(message.getGame(), message.getGamePerspective(), new ArrayList<>(), null);
         }
-        System.out.println(message.getMessage());
         printInput(state);
     }
 

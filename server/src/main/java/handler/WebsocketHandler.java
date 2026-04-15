@@ -61,9 +61,9 @@ public class WebsocketHandler implements WsMessageHandler {
         try {
             GameData gameData = gameDAO.getGame(cmd.getGameID());
             int gamePerspective;
-            if(gameData.getWhiteUsername().equals(username)){
+            if(username.equals(gameData.getWhiteUsername())){
                 gamePerspective = 1;
-            } else if (gameData.getBlackUsername().equals(username)) {
+            } else if (username.equals(gameData.getBlackUsername())) {
                 gamePerspective = 2;
             } else {
                 gamePerspective = 3;
@@ -112,12 +112,12 @@ public class WebsocketHandler implements WsMessageHandler {
             GameData gameData = gameDAO.getGame(cmd.getGameID());
             String username = authDAO.getSession(cmd.getAuthToken()).getUsername();
             int gamePerspective;
-            if(gameData.getWhiteUsername().equals(username)){
+            if(username.equals(gameData.getWhiteUsername())){
                 gamePerspective = 1;
                 if(gameData.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)){
                     throw new Exception("Not your turn!");
                 }
-            } else if (gameData.getBlackUsername().equals(username)) {
+            } else if (username.equals(gameData.getBlackUsername())) {
                 gamePerspective = 2;
                 if(gameData.getGame().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
                     throw new Exception("Not your turn!");
@@ -132,7 +132,6 @@ public class WebsocketHandler implements WsMessageHandler {
             notification = new ServerMessage(notifType, message, null);
             connections.broadcast(gameData.getGameID(), ctx.session, notification);
         } catch (Exception e) {
-//            var message = "Can't find game";
             var notification = new ServerMessage(errorType, null, e.getMessage());
             connections.userNotify(ctx.session, notification);
         }
@@ -147,6 +146,9 @@ public class WebsocketHandler implements WsMessageHandler {
         }
         if(gamePerspective == 3){
             throw new Exception("You're observing and can't play the game");
+        }
+        if(game.getBoard().getPiece(startPos) == null){
+            throw new Exception("There's no piece there");
         }
         Collection<ChessMove> moves =  game.validMoves(startPos);
         Collection<ChessMove> filteredMoves = moves.stream()
@@ -189,9 +191,9 @@ public class WebsocketHandler implements WsMessageHandler {
                 throw new Exception("The game is over");
             }
             int gamePerspective;
-            if(gameData.getWhiteUsername().equals(username)){
+            if(username.equals(gameData.getWhiteUsername())){
                 gamePerspective = 1;
-            } else if (gameData.getBlackUsername().equals(username)) {
+            } else if (username.equals(gameData.getBlackUsername())) {
                 gamePerspective = 2;
             } else {
                 gamePerspective = 3;

@@ -12,6 +12,7 @@ public class PrintFunctions {
                                   int perspective,
                                   Collection<ChessMove> moves,
                                   ChessPosition startPos){
+        printMessage("\n", "");
         if(perspective == 1 || perspective == 3){
             printChess(board, "W", moves, startPos);
         }else{
@@ -95,10 +96,10 @@ public class PrintFunctions {
 
     private static void printLetterRow(String infoSettings, int step){
         printMessage(EMPTY, infoSettings);
-        char col = step > 0 ? 'a' : 'h';
+        char col = step > 0 ? 'h' : 'a';
         for (int i = 0; i < 8; i++) {
             printMessage(" " + col + " ", infoSettings);
-            col += (char) step;
+            col -= (char) step;
         }
         printMessage(EMPTY + RESET_BG_COLOR + "\n", infoSettings);
 

@@ -55,16 +55,4 @@ public class GameService {
         GameData newGame = new GameData(request.gameID(), whiteName, blackName, game.getGameName(), game.getGame());
         gameDataAccess.updateGame(newGame);
     }
-
-    public void updateBoard(GameData gameData, ChessGame chessGame) throws DataAccessException {
-        GameData game = gameDataAccess.getGame(gameData.getGameID());
-        if(game == null){
-            throw new DataAccessException("bad request");
-        }
-        String whiteName = game.getWhiteUsername();
-        String blackName = game.getBlackUsername();
-        GameData newGame = new GameData(game.getGameID(), whiteName, blackName, game.getGameName(), chessGame);
-        gameDataAccess.updateGame(newGame);
-    }
-
 }

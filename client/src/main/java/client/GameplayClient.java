@@ -42,41 +42,12 @@ public class GameplayClient extends ChessClient {
 
     private EvalResponse move(String[] params) throws Exception {
         String message = "";
-//        if(data.getGamePerspective() == 3){
-//            throw new Exception("You're observing and can't play the game");
-//        }
-//        if(data.getGameData().getGame().getGameState() != 0){
-//            throw new Exception("The games's over!");
-//        }
         if(params.length == 2){
             ChessPosition startPos = getPosFromString(params[0]);
             ChessPosition endPos = getPosFromString(params[1]);
-            GameData gameData = data.getGameData();
-            ChessGame game = gameData.getGame();
-
             ChessMove move = new ChessMove(startPos, endPos, null);
-            Collection<ChessMove> moves =  data.getGameData().getGame().validMoves(startPos);
-            Collection<ChessMove> filteredMoves = moves.stream()
-                    .filter(e -> e.getStartPosition().equals(startPos))
-                    .filter(e -> e.getEndPosition().equals(endPos))
-                    .toList();
-            if(filteredMoves.isEmpty()){
-                throw new Exception("This isn't a valid move!");
-//            } else if (filteredMoves.size() > 1) {
-//                move = new ChessMove(startPos, endPos, null);
-//                message = "Your pawn can be promoted! What piece should it be promoted to?\n" +
-//                        "1- Queen \n2- Knight \n3- Bishop \n4- Rook";
-//                printMessage(message, "");
-//                Scanner scanner = new Scanner(System.in);
-//                String line = scanner.nextLine();
-//                int pieceChoice = intFromStr(line);
-//                switch (pieceChoice){
-//                    case 1
-//                }
-            }
             ws.makeMove(data, move);
             message = "Move Successful!";
-//            here
         }else{
             throw new Exception("Incorrect arguments. Please format your move request like this: \n" +
                     "move <START POS> <END POS>");
@@ -103,14 +74,6 @@ public class GameplayClient extends ChessClient {
 
     private EvalResponse leaveGame() throws Exception {
         String message =  "You left the game";
-        GameData gameData = data.getGameData();
-//        if(data.getGamePerspective() == 1){
-//            JoinGameRequest request = new JoinGameRequest("WHITE", gameData.getGameID(), data.getUsername());
-//            server.joinGame(request, data.getAuthToken());
-//        } else if (data.getGamePerspective() == 2) {
-//            JoinGameRequest request = new JoinGameRequest("BLACK", gameData.getGameID(), data.getUsername());
-//            server.joinGame(request, data.getAuthToken());
-//        }
         ws.leaveGame(data);
         data.setGamePerspective(0);
         data.setGameData(null);
@@ -128,22 +91,6 @@ public class GameplayClient extends ChessClient {
         return new EvalResponse("", 2, data);
     }
 
-//    private ChessMove getPromotion(ChessMove move) throws Exception {
-//        Scanner scanner = new Scanner(System.in);
-//        int pieceChoice = 0;
-//        while (pieceChoice == 0) {
-//            String message = "Your pawn can be promoted! What piece should it be promoted to?\n" +
-//                    "1- Queen \n2- Knight \n3- Bishop \n4- Rook";
-//            printMessage(message, "");
-//            String line = scanner.nextLine();
-//            pieceChoice = intFromStr(line);
-//            switch (pieceChoice) {
-//                case 1 -> m
-//
-//            }
-//        }
-//    }
-
     private ChessPosition getPosFromString(String pos) throws Exception {
         if (pos == null || pos.length() < 2) {
             throw new Exception("Please format the position as column then row with no space");
@@ -154,8 +101,8 @@ public class GameplayClient extends ChessClient {
         if (letterPart.isEmpty() || digitPart.isEmpty()) {
             throw new Exception("Position missing row or column.");
         }
-        int col = letterPart.charAt(0) - 'a';
-        int row = Integer.parseInt(digitPart) - 1;
+        int col = letterPart.charAt(0) - 'a' + 1;
+        int row = Integer.parseInt(digitPart);
         return new ChessPosition(row, col);
     }
 

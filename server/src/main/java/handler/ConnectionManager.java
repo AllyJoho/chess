@@ -25,10 +25,6 @@ public class ConnectionManager {
         }
     }
 
-    public Set<Session> getPlayers(int gameID) {
-        return connections.getOrDefault(gameID, Collections.emptySet());
-    }
-
     public void broadcast(int gameID, Session excludeSession, ServerMessage notification) {
         String msg = new Gson().toJson(notification);
         Set<Session> players = connections.get(gameID);
